@@ -6,11 +6,17 @@ const API_BASE_URL = 'http://127.0.0.1:8000/api';
 export const fetchWithToken = async (endpoint, options = {}) => {
   const token = useAuthStore.getState().accessToken;
 
+  const isFormData = options.body instanceof FormData;
+
   const headers = {
-    'Content-Type': 'application/json',
     ...(options.headers || {}),
     ...(token && { Authorization: `Bearer ${token}` }),
   };
+
+  // Solo agregamos Content-Type si NO es FormData
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   const res = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
@@ -18,7 +24,6 @@ export const fetchWithToken = async (endpoint, options = {}) => {
   });
 
   if (res.status === 401) {
-    // Redirigir al login si está fuera de contexto de React
     window.location.href = '/login';
     return;
   }

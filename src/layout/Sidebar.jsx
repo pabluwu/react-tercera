@@ -2,7 +2,7 @@
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 import useAuthStore from '../store/useAuthStore';
-import { Home, User, ChevronDown, Shield, MapPin, ScrollText, ChevronUp, Activity } from 'lucide-react';
+import { Home, User, ChevronDown, Shield, LibraryBig, ScrollText, ChevronUp, Activity, CircleDollarSign } from 'lucide-react';
 
 const Sidebar = () => {
     const [openKeys, setOpenKeys] = useState([]);
@@ -33,7 +33,21 @@ const Sidebar = () => {
                 { key: 'gestion', label: 'Gestionar Licencias', path: '/licencia/gestionar' },
             ],
         },
-        { key: 'estaciones', label: 'Estaciones', icon: <MapPin size={18} /> },
+        {
+            key: 'archivos', label: 'Archivos', icon: <LibraryBig size={18} />,
+            children: [
+                { key: 'subir-archivo', label: 'Subir archivo', path: '/archivos/subir' },
+                { key: 'revisar-archivos', label: 'Revisar archivos', path: '/archivos/ver' },
+            ],
+        },
+        {
+            key: 'tesoreria', label: 'Tesoreria', icon: <CircleDollarSign size={18} />,
+            children: [
+                { key: 'bombero', label: 'Subir comprobante', path: '/bombero/subir-comprobante' },
+                { key: 'bandeja', label: 'Revisar bandeja', path: '/tesorero/bandeja' },
+                { key: 'registrar-comprobante', label: 'Registrar cuotas', path: '/tesorero/registrar' },
+            ],
+        },
     ];
 
     const toggleOpen = (key) => {

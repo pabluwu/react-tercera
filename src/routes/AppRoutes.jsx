@@ -16,6 +16,14 @@ import CrearListaAsistencia from '../pages/Listas/CrearLista';
 import ListasAsistencia from '../pages/Listas/ListasAsistencia';
 import DetalleListaAsistencia from '../pages/Listas/DetalleListaAsistencia';
 
+import SubirArchivo from '../pages/Archivos/SubirArchivos';
+import SeleccionarTipoArchivo from '../pages/Archivos/SeleccionarTipoArchivo';
+import ListaArchivosPorTipo from '../pages/Archivos/ListaArchivosPorTipo';
+
+import BomberoSubirComprobante from '../pages/Tesoreria/BomberoSubirComprobante';
+import TesoreraBandeja from '../pages/Tesoreria/TesoreroBandeja';
+import TesoreraRegistrarComprobante from '../pages/Tesoreria/TesoreroRegistrarComprobante';
+
 const AppRoutes = () => {
 
     const { user } = useAuthStore();
@@ -62,6 +70,30 @@ const AppRoutes = () => {
             <Route path="/lista/:id" element={
                 <PrivateRoute><DetalleListaAsistencia /></PrivateRoute>
             } />
+            
+
+            {/* Archivos */}
+            <Route path="/archivos/subir" element={
+                <PrivateRoute><SubirArchivo /></PrivateRoute>
+            } />
+            <Route path="/archivos/ver" element={
+                <PrivateRoute><SeleccionarTipoArchivo /></PrivateRoute>
+            } />
+            <Route path="/archivos/:tipo" element={
+                <PrivateRoute><ListaArchivosPorTipo /></PrivateRoute>
+            } />
+
+            {/* Tesoreria */}
+            <Route path="/bombero/subir-comprobante" element={
+                <PrivateRoute><BomberoSubirComprobante /></PrivateRoute>
+            } />
+            <Route path="/tesorero/bandeja" element={
+                <PrivateRoute><TesoreraBandeja /></PrivateRoute>
+            } />
+            <Route path="/tesorero/registrar" element={
+                <PrivateRoute><TesoreraRegistrarComprobante /></PrivateRoute>
+            } />
+            
         </Routes>
     );
 };
