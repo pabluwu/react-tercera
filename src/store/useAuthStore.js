@@ -19,9 +19,12 @@ const useAuthStore = create((set) => ({
     login: async (access, refresh) => {
         localStorage.setItem('access', access);
         localStorage.setItem('refresh', refresh);
+        // Guardar tokens en estado antes de pedir /me/ para que fetchWithToken use el Bearer correcto
+        set({ accessToken: access, refreshToken: refresh });
         const me = await fetchWithToken('/me/');
+        console.log(me, 'ver auth');
         localStorage.setItem('user', JSON.stringify(me));
-        set({ accessToken: access, refreshToken: refresh, user: me });
+        set({ user: me });
     },
 
     logout: () => {

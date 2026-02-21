@@ -14,8 +14,8 @@ const Login = () => {
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: ({ access, refresh }) => {
-      login(access, refresh);
+    onSuccess: async ({ access, refresh }) => {
+      await login(access, refresh);
       navigate('/dashboard');
     },
     onError: () => alert('Credenciales inválidas'),
@@ -37,11 +37,11 @@ const Login = () => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-3">
-            <label className="form-label">Nombre de usuario o email</label>
+            <label className="form-label">RUT</label>
             <input
-              {...register('username')}
+              {...register('rut')}
               className="form-control"
-              placeholder="tu@email.com"
+              placeholder="12345678-9"
               required
             />
           </div>
@@ -67,9 +67,9 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="text-center mt-4 mb-0 text-muted">
-          ¿No tienes una cuenta? <a href="#" className="text-primary">Regístrate aquí</a>
-        </p>
+        <div className="text-center mt-4">
+          <a href="/password-reset" className="text-primary small">¿Olvidaste tu contraseña?</a>
+        </div>
       </div>
     </div>
   );

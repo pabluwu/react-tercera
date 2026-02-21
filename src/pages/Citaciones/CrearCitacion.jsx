@@ -15,6 +15,10 @@ const CrearCitacion = () => {
     const autorSeleccionado = watch('autor');
 
     const onSubmit = (data) => {
+        if (!data.autor) {
+            toast.error('Selecciona un autor para la citación');
+            return;
+        }
         mutate(data, {
             onSuccess: () => {
                 toast.success('Citación creada correctamente');
@@ -38,23 +42,23 @@ const CrearCitacion = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="row g-3">
                     <div className="col-md-6">
                         <label className="form-label">Nombre</label>
-                        <input className="form-control" {...register('nombre')} required />
+                        <input className="form-control" {...register('nombre', { required: true })} required />
                     </div>
                     <div className="col-md-6">
                         <label className="form-label">Lugar</label>
-                        <input className="form-control" {...register('lugar')} required />
+                        <input className="form-control" {...register('lugar', { required: true })} required />
                     </div>
                     <div className="col-md-6">
                         <label className="form-label">Tenida</label>
-                        <input className="form-control" {...register('tenida')} required />
+                        <input className="form-control" {...register('tenida', { required: true })} required />
                     </div>
                     <div className="col-md-6">
                         <label className="form-label">Fecha</label>
-                        <input className="form-control" type="datetime-local" {...register('fecha')} />
+                        <input className="form-control" type="datetime-local" {...register('fecha', { required: true })} required />
                     </div>
                     <div className="col-12">
                         <label className="form-label">Descripción</label>
-                        <textarea className="form-control" {...register('descripcion')} rows={3} />
+                        <textarea className="form-control" {...register('descripcion', { required: true })} rows={3} required />
                     </div>
                     <div className="col-12">
                         <label className="form-label">Autor (buscar por email)</label>
@@ -84,7 +88,7 @@ const CrearCitacion = () => {
                                 ))}
                             </ul>
                         )}
-                        <input type="hidden" {...register('autor')} />
+                        <input type="hidden" {...register('autor', { required: true })} />
                     </div>
 
                     <div className="col-12">

@@ -6,6 +6,7 @@ import PrivateRoute from '../auth/PrivateRoute';
 
 import CrearCitacion from '../pages/Citaciones/CrearCitacion';
 import ListCitaciones from '../pages/Citaciones/List';
+import DetalleCitacion from '../pages/Citaciones/DetalleCitacion';
 
 import RegistrarLicencia from '../pages/Licencias/RegistrarLicencias';
 import LicenciasPorUsuario from '../pages/Licencias/LicenciasPorUsuario';
@@ -23,14 +24,39 @@ import ListaArchivosPorTipo from '../pages/Archivos/ListaArchivosPorTipo';
 import BomberoSubirComprobante from '../pages/Tesoreria/BomberoSubirComprobante';
 import TesoreraBandeja from '../pages/Tesoreria/TesoreroBandeja';
 import TesoreraRegistrarComprobante from '../pages/Tesoreria/TesoreroRegistrarComprobante';
+import RevisarCuotas from '../pages/Tesoreria/RevisarCuotas';
+import RevisarCuotaDetalleBombero from '../pages/Tesoreria/RevisarCuotaDetalleBombero';
+import MisCuotas from '../pages/Tesoreria/MisCuotas';
+import BomberoPerfil from '../pages/Bomberos/BomberoPerfil';
+import MiAsistencia from '../pages/Asistencia/MiAsistencia';
+import AsistenciasCitaciones from '../pages/Asistencia/AsistenciasCitaciones';
+import ResumenCitacion from '../pages/Asistencia/ResumenCitacion';
+import AsistenciasEmergencias from '../pages/Asistencia/AsistenciasEmergencias';
+import DetalleEmergencia from '../pages/Asistencia/DetalleEmergencia';
+import AsistenciaAnual from '../pages/Asistencia/AsistenciaAnual';
+import AsistenciasBomberos from '../pages/Asistencia/AsistenciasBomberos';
+import DetalleBomberoAsistencia from '../pages/Asistencia/DetalleBombero';
+import TodasLasCitaciones from '../pages/Citaciones/TodasLasCitaciones';
+import TesoreroRoute from '../auth/TesoreroRoute';
+import AyudanteSecretarioRoute from '../auth/AyudanteSecretarioRoute';
+import { isTesorero } from '../auth/roleUtils';
+import OficialRoute from '../auth/OficialRoute';
+import PasswordResetRequest from '../pages/Auth/PasswordResetRequest';
+import PasswordResetConfirm from '../pages/Auth/PasswordResetConfirm';
 
 const AppRoutes = () => {
 
     const { user } = useAuthStore();
-    console.log(user);
+    const userIsTesorero = isTesorero(user);
+    
     return (
         <Routes>
+            <Route path="*" element={
+                <PrivateRoute><Dashboard /></PrivateRoute>
+            } />
             <Route path="/login" element={<Login />} />
+            <Route path="/password-reset" element={<PasswordResetRequest />} />
+            <Route path="/password-reset/confirm" element={<PasswordResetConfirm />} />
             <Route path="/dashboard" element={
                 <PrivateRoute><Dashboard /></PrivateRoute>
             } />
@@ -38,14 +64,21 @@ const AppRoutes = () => {
                 <PrivateRoute><Dashboard /></PrivateRoute>
             } />
 
-            {
-                user?.permissions.includes('bomberos.add_citacion') &&
-                <Route path="/citaciones/crear" element={
-                    <PrivateRoute><CrearCitacion /></PrivateRoute>
-                } />
-            }
+            <Route path="/citaciones/crear" element={
+                <PrivateRoute>
+                    <AyudanteSecretarioRoute>
+                        <CrearCitacion />
+                    </AyudanteSecretarioRoute>
+                </PrivateRoute>
+            } />
             <Route path="/citaciones/list" element={
                 <PrivateRoute><ListCitaciones /></PrivateRoute>
+            } />
+            <Route path="/citaciones/:id" element={
+                <PrivateRoute><DetalleCitacion /></PrivateRoute>
+            } />
+            <Route path="/citaciones/todas" element={
+                <PrivateRoute><TodasLasCitaciones /></PrivateRoute>
             } />
 
             <Route path="/licencia/citacion/:id" element={
@@ -62,7 +95,11 @@ const AppRoutes = () => {
             } />
 
             <Route path="/lista/crear" element={
-                <PrivateRoute><CrearListaAsistencia /></PrivateRoute>
+                <PrivateRoute>
+                    <AyudanteSecretarioRoute>
+                        <CrearListaAsistencia />
+                    </AyudanteSecretarioRoute>
+                </PrivateRoute>
             } />
             <Route path="/lista/list" element={
                 <PrivateRoute><ListasAsistencia /></PrivateRoute>
@@ -70,11 +107,15 @@ const AppRoutes = () => {
             <Route path="/lista/:id" element={
                 <PrivateRoute><DetalleListaAsistencia /></PrivateRoute>
             } />
-            
+
 
             {/* Archivos */}
             <Route path="/archivos/subir" element={
-                <PrivateRoute><SubirArchivo /></PrivateRoute>
+                <PrivateRoute>
+                    <OficialRoute>
+                        <SubirArchivo />
+                    </OficialRoute>
+                </PrivateRoute>
             } />
             <Route path="/archivos/ver" element={
                 <PrivateRoute><SeleccionarTipoArchivo /></PrivateRoute>
@@ -87,13 +128,79 @@ const AppRoutes = () => {
             <Route path="/bombero/subir-comprobante" element={
                 <PrivateRoute><BomberoSubirComprobante /></PrivateRoute>
             } />
-            <Route path="/tesorero/bandeja" element={
-                <PrivateRoute><TesoreraBandeja /></PrivateRoute>
+            {userIsTesorero && (
+                <>
+                    <Route path="/tesorero/bandeja" element={
+                        <PrivateRoute>
+                            <TesoreroRoute>
+                                <TesoreraBandeja />
+                            </TesoreroRoute>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/tesorero/registrar" element={
+                        <PrivateRoute>
+                            <TesoreroRoute>
+                                <TesoreraRegistrarComprobante />
+                            </TesoreroRoute>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/tesorero/revisar" element={
+                        <PrivateRoute>
+                            <TesoreroRoute>
+                                <RevisarCuotas />
+                            </TesoreroRoute>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/tesorero/revisar/:id" element={
+                        <PrivateRoute>
+                            <TesoreroRoute>
+                                <RevisarCuotaDetalleBombero />
+                            </TesoreroRoute>
+                        </PrivateRoute>
+                    } />
+                </>
+            )}
+            <Route path="/bombero/:id" element={
+                <PrivateRoute><BomberoPerfil /></PrivateRoute>
             } />
-            <Route path="/tesorero/registrar" element={
-                <PrivateRoute><TesoreraRegistrarComprobante /></PrivateRoute>
+
+            {/* Asistencia */}
+            <Route path="/asistencia/mia" element={
+                <PrivateRoute><MiAsistencia /></PrivateRoute>
             } />
-            
+            <Route path="/tesorero/mis-cuotas" element={
+                <PrivateRoute><MisCuotas /></PrivateRoute>
+            } />
+            <Route path="/asistencia/citaciones" element={
+                <PrivateRoute><AsistenciasCitaciones /></PrivateRoute>
+            } />
+            <Route path="/asistencia/resumen/:id" element={
+                <PrivateRoute><ResumenCitacion /></PrivateRoute>
+            } />
+            <Route path="/asistencia/emergencias" element={
+                <PrivateRoute><AsistenciasEmergencias /></PrivateRoute>
+            } />
+            <Route path="/asistencia/detalle/emergencia/:id" element={
+                <PrivateRoute><DetalleEmergencia /></PrivateRoute>
+            } />
+            <Route path="/asistencia/anual" element={
+                <PrivateRoute><AsistenciaAnual /></PrivateRoute>
+            } />
+            <Route path="/asistencia/bomberos" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <AsistenciasBomberos />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/asistencia/bombero/:id" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <DetalleBomberoAsistencia />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+
         </Routes>
     );
 };

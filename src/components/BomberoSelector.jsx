@@ -24,8 +24,8 @@ const BomberoSelector = ({ usuarios, filtro, onFiltroChange, register }) => {
                                 type="checkbox"
                                 className="form-check-input"
                                 {...register('bomberos')}
-                                value={user.id}
-                                id={`bombero-${user.id}`}
+                                value={user?.user.id}
+                                id={`bombero-${user?.user.id}`}
                             />
                             <label className="form-check-label" htmlFor={`bombero-${user?.user.id}`}>
                                 <CheckSquare size={16} className="me-1" />
