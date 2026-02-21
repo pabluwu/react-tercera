@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Layout from "../../layout/Layout";
-import { fetchWithToken, API_BASE_URL } from "../../api/fetchWithToken";
+import { fetchWithToken } from "../../api/fetchWithToken";
+import { API_BASE_URL } from "../../api/apiConfig";
 import { toast } from "react-toastify";
 
 const getFirstValue = (source, keys) => {

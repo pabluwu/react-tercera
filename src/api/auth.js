@@ -1,5 +1,7 @@
+import { API_BASE_URL } from './apiConfig';
+
 export const loginUser = async ({ rut, password }) => {
-    const res = await fetch('http://127.0.0.1:8000/api/token/', {
+    const res = await fetch(`${API_BASE_URL}/token/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,7 +18,7 @@ export const loginUser = async ({ rut, password }) => {
   };
 
 export const requestPasswordReset = async ({ rut }) => {
-  const res = await fetch('http://127.0.0.1:8000/api/password-reset/request/', {
+  const res = await fetch(`${API_BASE_URL}/password-reset/request/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -33,7 +35,7 @@ export const requestPasswordReset = async ({ rut }) => {
 };
 
 export const confirmPasswordReset = async ({ uid, token, new_password, new_password_confirm }) => {
-  const res = await fetch('http://127.0.0.1:8000/api/password-reset/confirm/', {
+  const res = await fetch(`${API_BASE_URL}/password-reset/confirm/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

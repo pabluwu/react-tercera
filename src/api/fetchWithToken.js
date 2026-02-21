@@ -1,7 +1,6 @@
 // src/api/fetchWithToken.js
 import useAuthStore from '../store/useAuthStore';
-
-export const API_BASE_URL = 'http://127.0.0.1:8000/api';
+import { API_BASE_URL } from './apiConfig';
 
 export const fetchWithToken = async (endpoint, options = {}) => {
   const token = useAuthStore.getState().accessToken;
