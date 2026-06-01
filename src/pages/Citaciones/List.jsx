@@ -10,18 +10,18 @@ const ListCitaciones = () => {
 
     return (
         <Layout>
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                 <div>
-                    <h2 className="fw-bold">Citaciones</h2>
+                    <h2 className="fw-bold mb-1">Citaciones</h2>
                     <p className="text-muted mb-0">Gestión y seguimiento de citaciones</p>
                 </div>
-                <Link to={'/citaciones/crear'} className="btn btn-danger">Nueva Citación</Link>
+                <Link to={'/citaciones/crear'} className="btn btn-danger w-100 w-md-auto">Nueva Citación</Link>
             </div>
 
             {isLoading ? (
                 <p>Cargando citaciones...</p>
             ) : (
-                <div className="row g-4">
+                <div className="row g-3 g-md-4">
                     {data.map((citacion) => {
                         const fechaCitacion = parseISO(citacion.fecha);
                         const horasRestantes = differenceInHours(fechaCitacion, new Date());
@@ -30,7 +30,7 @@ const ListCitaciones = () => {
                         const horaTexto = citacion.fecha?.split('T')[1]?.slice(0, 5) ?? '—';
 
                         return (
-                            <div className="col-md-6 col-lg-4 col-xl-3" key={citacion.id}>
+                            <div className="col-12 col-sm-6 col-lg-4 col-xl-3" key={citacion.id}>
                                 <div className="card shadow-sm border-0 h-100">
                                     <div className="card-body d-flex flex-column">
                                         <h6 className="fw-bold mb-1">{citacion.nombre}</h6>
@@ -66,17 +66,17 @@ const ListCitaciones = () => {
                                             {citacion.descripcion || 'Sin descripción'}
                                         </div>
 
-                                        <div className="d-flex flex-column gap-2 mt-auto">
+                                        <div className="d-flex flex-column flex-sm-row gap-2 mt-auto">
                                             <Link
                                                 to={`/citaciones/${citacion.id}`}
-                                                className="btn btn-outline-secondary btn-sm"
+                                                className="btn btn-outline-secondary btn-sm flex-fill"
                                             >
                                                 Ver detalle
                                             </Link>
                                             {disponibleParaLicencia && (
                                                 <Link
                                                     to={`/licencia/citacion/${citacion.id}`}
-                                                    className="btn btn-outline-primary btn-sm"
+                                                    className="btn btn-outline-primary btn-sm flex-fill"
                                                 >
                                                     Solicitar Licencia
                                                 </Link>

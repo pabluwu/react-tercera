@@ -5,9 +5,24 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+@media (max-width: 767.98px) {
+  .btn.w-md-auto {
+    width: auto !important;
+  }
+  
+  .flex-sm-row .flex-fill {
+    flex: 1 1 0;
+  }
 }

@@ -1,12 +1,12 @@
-
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 import useAuthStore from '../store/useAuthStore';
 import { isTesorero, isAyudanteOrSecretario, isOficial } from '../auth/roleUtils';
-import { Home, User, ChevronDown, Shield, LibraryBig, ScrollText, ChevronUp, Activity, CircleDollarSign, ClipboardCheck, Package } from 'lucide-react';
+import { Home, User, ChevronDown, Shield, LibraryBig, ScrollText, ChevronUp, Activity, CircleDollarSign, ClipboardCheck, Package, X, Menu } from 'lucide-react';
 
 const Sidebar = () => {
     const [openKeys, setOpenKeys] = useState([]);
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     const { user } = useAuthStore();
     const userIsTesorero = isTesorero(user);
@@ -97,60 +97,143 @@ const Sidebar = () => {
         );
     };
 
-    return (
-        <div className="bg-white border-end p-3 d-flex flex-column" style={{ width: 250, minHeight: '100vh' }}>
-            <h5 className="text-danger fw-bold mb-4">FireControl</h5>
-            <p className="text-muted small">Sistema de Gestión</p>
-            <hr />
-            <nav className="nav flex-column">
-                {menuItems.map(({ key, label, icon, children, path }) => (
-                    <div key={key}>
-                        <div
-                            onClick={() => {
-                                if (path) return;
-                                if (children) toggleOpen(key);
-                            }}
-                            className="nav-link d-flex justify-content-between align-items-center text-dark gap-2 cursor-pointer"
-                            style={{ cursor: path ? 'pointer' : children ? 'pointer' : 'default' }}
-                        >
-                            {path ? (
-                                <NavLink
-                                    to={path}
-                                    className={({ isActive }) =>
-                                        `d-flex align-items-center gap-2 text-decoration-none ${
-                                            isActive ? 'text-primary fw-semibold' : 'text-dark'
-                                        }`
-                                    }
-                                >
-                                    {icon} {label}
-                                </NavLink>
-                            ) : (
-                                <span className="d-flex align-items-center gap-2">
-                                    {icon} {label}
-                                </span>
-                            )}
-                            {!path && children && (openKeys.includes(key) ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
-                        </div>
+    const handleLinkClick = () => {
+        setMobileOpen(false);
+    };
 
-                        {children && openKeys.includes(key) && (
-                            <div className="ms-4 mt-2 d-flex flex-column gap-1">
-                                {children.map(({ key: subKey, label: subLabel, path }) => (
+    return (
+        <>
+            <button
+                className="btn btn-outline-primary d-md-none position-fixed bg-white d-flex align-items-center justify-content-center p-0"
+                style={{ top: '0.5rem', left: '0.75rem', zIndex: 1050, width: 40, height: 40, visibility: mobileOpen ? 'hidden' : 'visible' }}
+                onClick={() => setMobileOpen(true)}
+                aria-label="Abrir menú"
+            >
+                <Menu size={20} />
+            </button>
+
+            {mobileOpen && (
+                <div className="d-md-none position-fixed w-100 h-100 bg-dark bg-opacity-50" style={{ zIndex: 1045 }} onClick={() => setMobileOpen(false)} />
+            )}
+
+            <div className="d-none d-md-block bg-white border-end p-3" style={{ width: 250, minHeight: '100vh' }}>
+                <h5 className="text-danger fw-bold mb-4">FireControl</h5>
+                <p className="text-muted small">Sistema de Gestión</p>
+                <hr />
+                <nav className="nav flex-column">
+                    {menuItems.map(({ key, label, icon, children, path }) => (
+                        <div key={key}>
+                            <div
+                                onClick={() => {
+                                    if (path) return;
+                                    if (children) toggleOpen(key);
+                                }}
+                                className="nav-link d-flex justify-content-between align-items-center text-dark gap-2 cursor-pointer"
+                                style={{ cursor: path ? 'pointer' : children ? 'pointer' : 'default' }}
+                            >
+                                {path ? (
                                     <NavLink
                                         to={path}
-                                        key={subKey}
                                         className={({ isActive }) =>
-                                            `nav-link py-1 px-2 rounded ${isActive ? 'bg-primary text-white' : 'text-muted'}`
+                                            `d-flex align-items-center gap-2 text-decoration-none ${
+                                                isActive ? 'text-primary fw-semibold' : 'text-dark'
+                                            }`
                                         }
                                     >
-                                        {subLabel}
+                                        {icon} {label}
                                     </NavLink>
-                                ))}
+                                ) : (
+                                    <span className="d-flex align-items-center gap-2">
+                                        {icon} {label}
+                                    </span>
+                                )}
+                                {!path && children && (openKeys.includes(key) ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
                             </div>
-                        )}
-                    </div>
-                ))}
-            </nav>
-        </div>
+
+                            {children && openKeys.includes(key) && (
+                                <div className="ms-4 mt-2 d-flex flex-column gap-1">
+                                    {children.map(({ key: subKey, label: subLabel, path }) => (
+                                        <NavLink
+                                            to={path}
+                                            key={subKey}
+                                            className={({ isActive }) =>
+                                                `nav-link py-1 px-2 rounded ${isActive ? 'bg-primary text-white' : 'text-muted'}`
+                                            }
+                                        >
+                                            {subLabel}
+                                        </NavLink>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </nav>
+            </div>
+
+            <div className="d-flex d-md-none flex-column bg-white border-end p-3 position-fixed h-100" style={{ width: 250, top: 0, zIndex: 1046, transition: 'left 0.3s ease-in-out', left: mobileOpen ? 0 : '-250px' }} onClick={(e) => e.stopPropagation()}>
+                <div className="d-flex justify-content-end align-items-center mb-3">
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => setMobileOpen(false)}>
+                        <X size={18} />
+                    </button>
+                </div>
+                <h5 className="text-danger fw-bold mb-4">FireControl</h5>
+                <p className="text-muted small">Sistema de Gestión</p>
+                <hr />
+                <nav className="nav flex-column" style={{ overflowY: 'auto' }}>
+                    {menuItems.map(({ key, label, icon, children, path }) => (
+                        <div key={key}>
+                            <div
+                                onClick={() => {
+                                    if (path) {
+                                        handleLinkClick();
+                                        return;
+                                    }
+                                    if (children) toggleOpen(key);
+                                }}
+                                className="nav-link d-flex justify-content-between align-items-center text-dark gap-2 cursor-pointer"
+                                style={{ cursor: path ? 'pointer' : children ? 'pointer' : 'default' }}
+                            >
+                                {path ? (
+                                    <NavLink
+                                        to={path}
+                                        className={({ isActive }) =>
+                                            `d-flex align-items-center gap-2 text-decoration-none ${
+                                                isActive ? 'text-primary fw-semibold' : 'text-dark'
+                                            }`
+                                        }
+                                        onClick={handleLinkClick}
+                                    >
+                                        {icon} {label}
+                                    </NavLink>
+                                ) : (
+                                    <span className="d-flex align-items-center gap-2">
+                                        {icon} {label}
+                                    </span>
+                                )}
+                                {!path && children && (openKeys.includes(key) ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                            </div>
+
+                            {children && openKeys.includes(key) && (
+                                <div className="ms-4 mt-2 d-flex flex-column gap-1">
+                                    {children.map(({ key: subKey, label: subLabel, path }) => (
+                                        <NavLink
+                                            to={path}
+                                            key={subKey}
+                                            className={({ isActive }) =>
+                                                `nav-link py-1 px-2 rounded ${isActive ? 'bg-primary text-white' : 'text-muted'}`
+                                            }
+                                            onClick={handleLinkClick}
+                                        >
+                                            {subLabel}
+                                        </NavLink>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </nav>
+            </div>
+        </>
     );
 };
 

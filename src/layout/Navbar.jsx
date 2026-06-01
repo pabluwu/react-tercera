@@ -24,17 +24,14 @@ const Navbar = () => {
     }, [isOpen]);
 
     return (
-        <div className="d-flex justify-content-between align-items-center px-4 py-2 border-bottom bg-white">
-            <div className="d-flex align-items-center gap-3">
-                <button className="btn btn-sm d-md-none">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
+        <div className="d-flex justify-content-between align-items-center px-3 px-md-4 py-2 border-bottom bg-white">
+            <div className="d-flex align-items-center gap-2 gap-md-3 ms-5 ms-md-0">
                 <div className="input-group">
                     <span className="input-group-text bg-white border-end-0"><Search size={16} /></span>
                     <input type="text" className="form-control border-start-0" placeholder="Buscar..." />
                 </div>
             </div>
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2 gap-md-3">
                 {/* <div className="position-relative">
                     <Bell size={20} />
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">

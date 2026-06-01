@@ -27,12 +27,12 @@ const Tabla = ({ data, columns, pageSize = 10 }) => {
     return (
         <div>
             <div className="table-responsive">
-                <table className="table table-bordered table-hover">
+                <table className="table table-bordered table-hover mb-0">
                     <thead className="table-light">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <th key={header.id}>
+                                    <th key={header.id} className="align-middle">
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </th>
                                 ))}
@@ -50,7 +50,7 @@ const Tabla = ({ data, columns, pageSize = 10 }) => {
                             table.getRowModel().rows.map((row) => (
                                 <tr key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <td key={cell.id}>
+                                        <td key={cell.id} className="align-middle">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </td>
                                     ))}
@@ -61,7 +61,7 @@ const Tabla = ({ data, columns, pageSize = 10 }) => {
                 </table>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 gap-md-0 mt-3">
                 <small className="text-muted">
                     Mostrando {start}-{end} de {total} registros
                 </small>
