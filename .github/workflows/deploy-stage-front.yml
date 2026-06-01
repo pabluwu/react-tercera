@@ -30,6 +30,7 @@ jobs:
     - name: Compilar proyecto
       env:
         VITE_API_URL: http://test-api.terceraquillota.cl/api/  #
+        CI: false # 👈 AGREGA ESTA LÍNEA AQUÍ
       run: npm run build
 
     # 5. Subir los archivos estáticos compilados al VPS vía RSYNC SSH
