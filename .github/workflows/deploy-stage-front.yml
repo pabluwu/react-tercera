@@ -37,10 +37,11 @@ jobs:
     - name: Sincronizar archivos con el VPS
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.SSH_HOST }}      # Tu IP: 109.123.252.124
-        username: ${{ secrets.SSH_USER }}  # root
-        key: ${{ secrets.SSH_PRIVATE_KEY }}        # Tu llave privada SSH
-        port: 2022                         # Tu puerto SSH personalizado si aplica
-        source: "dist/*"                   # Vite compila dentro de la carpeta dist/
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        # 🟢 CORREGIDO: Apuntamos a 'build/' que es lo que genera Create React App
+        source: "build/" 
         target: "/var/www/stage-front"
-        strip_components: 1                # Evita que se cree la carpeta "dist" dentro del VPS, sube solo el contenido
+        # Mantiene el 1 para que suba solo el contenido de adentro de build/ directamente a /var/www/stage-front
+        strip_components: 1         # Evita que se cree la carpeta "dist" dentro del VPS, sube solo el contenido
