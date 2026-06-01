@@ -26,7 +26,7 @@ const BomberoSelector = ({ usuarios, filtro, onFiltroChange, register, watch }) 
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
                 {filtrados.length > 0 ? (
                     filtrados.map((user) => {
                         const isSelected = selectedBomberos.includes(user?.user.id.toString()) || selectedBomberos.includes(user?.user.id);

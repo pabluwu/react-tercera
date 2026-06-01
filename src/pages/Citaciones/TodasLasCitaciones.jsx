@@ -1,251 +1,165 @@
 import { useMemo, useState } from 'react';
-import { CalendarDays, Clock, MapPin, User } from 'lucide-react';
-import { parseISO, differenceInHours, formatISO } from 'date-fns';
+import { CalendarDays, Clock, MapPin, User, Search, RefreshCw, Loader2, Info } from 'lucide-react';
+import { parseISO, format } from 'date-fns';
 import Layout from '../../layout/Layout';
 import { Link } from 'react-router-dom';
+
 import { useCitaciones } from '../../hooks/useCitaciones';
 
-const formatDateForInput = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-const toISO = (value, endOfDay = false) => {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  if (endOfDay) {
-    date.setHours(23, 59, 59, 999);
-  } else {
-    date.setHours(0, 0, 0, 0);
-  }
-  return formatISO(date);
-};
-
-const currentYear = new Date().getFullYear();
-
 const TodasLasCitaciones = () => {
-  const [year, setYear] = useState(currentYear);
-  const [fechaDesde, setFechaDesde] = useState(() =>
-    formatDateForInput(new Date(currentYear, 0, 1))
-  );
-  const [fechaHasta, setFechaHasta] = useState(() =>
-    formatDateForInput(new Date(currentYear, 11, 31))
-  );
+  const { data, isLoading, refetch, isFetching } = useCitaciones({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  const isoDesde = useMemo(() => toISO(fechaDesde, false), [fechaDesde]);
-  const isoHasta = useMemo(() => toISO(fechaHasta, true), [fechaHasta]);
+  const years = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const startYear = 2024;
+    const yearList = [];
+    for (let y = currentYear; y >= startYear; y--) {
+      yearList.push(y);
+    }
+    return yearList;
+  }, []);
 
-  const invalidRange =
-    fechaDesde &&
-    fechaHasta &&
-    new Date(fechaDesde) > new Date(fechaHasta);
-
-  const {
-    data: citacionesData,
-    isLoading,
-    isFetching,
-    isError,
-    error,
-    refetch,
-  } = useCitaciones({
-    fechaDesde: isoDesde,
-    fechaHasta: isoHasta,
-    enabled: !invalidRange,
-  });
-
-  const citaciones = citacionesData || [];
-
-  const handleSetYear = (targetYear) => {
-    setYear(targetYear);
-    setFechaDesde(formatDateForInput(new Date(targetYear, 0, 1)));
-    setFechaHasta(formatDateForInput(new Date(targetYear, 11, 31)));
-  };
-
-  const handlePrevYear = () => handleSetYear((year || currentYear) - 1);
-  const handleNextYear = () => handleSetYear((year || currentYear) + 1);
-  const handleCurrentYear = () => handleSetYear(currentYear);
-
-  const handleClearFilters = () => {
-    setYear(null);
-    setFechaDesde('');
-    setFechaHasta('');
-  };
+  const filteredCitaciones = useMemo(() => {
+    if (!data) return [];
+    return data.filter((c) => {
+      const fecha = parseISO(c.fecha);
+      const matchesYear = fecha.getFullYear() === selectedYear;
+      const matchesSearch = c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                           c.lugar.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesYear && matchesSearch;
+    });
+  }, [data, selectedYear, searchTerm]);
 
   return (
     <Layout>
-      <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
-        <div>
-          <h2 className="fw-bold mb-1">Todas las citaciones</h2>
-          <p className="text-muted mb-0">Explora el historial completo de citaciones registradas</p>
-        </div>
-        <div className="d-flex gap-2">
-          <div className="btn-group btn-group-sm" role="group" aria-label="Seleccionar año">
-            <button type="button" className="btn btn-outline-secondary" onClick={handlePrevYear}>
-              {(year || currentYear) - 1}
-            </button>
-            <button
-              type="button"
-              className={`btn btn-outline-primary ${year === currentYear ? 'active text-white' : ''}`}
-              onClick={handleCurrentYear}
-            >
-              {currentYear}
-            </button>
-            <button type="button" className="btn btn-outline-secondary" onClick={handleNextYear}>
-              {(year || currentYear) + 1}
-            </button>
+      <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Historial de Citaciones</h2>
+            <p className="text-slate-500 dark:text-slate-400">
+                Explora el registro histórico de todas las citaciones del Cuerpo.
+            </p>
           </div>
-          <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleClearFilters}>
-            Limpiar
+          <button
+            onClick={() => refetch()}
+            disabled={isLoading || isFetching}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
+          >
+            <RefreshCw size={18} className={isFetching ? "animate-spin" : ""} />
+            <span>{isFetching ? "Actualizando..." : "Actualizar"}</span>
           </button>
-          <Link to="/citaciones/crear" className="btn btn-danger btn-sm">
-            Nueva Citación
-          </Link>
         </div>
-      </div>
 
-      <div className="border rounded p-3 mb-4 bg-light">
-        <h5 className="mb-3">Filtrar por rango de fechas</h5>
-        <div className="row g-3 align-items-end">
-          <div className="col-sm-6 col-md-4 col-lg-3">
-            <label htmlFor="fecha-desde" className="form-label">Desde</label>
-            <input
-              id="fecha-desde"
-              type="date"
-              className="form-control"
-              value={fechaDesde}
-              onChange={(event) => {
-                setYear(null);
-                setFechaDesde(event.target.value);
-              }}
-              max={fechaHasta || undefined}
-            />
-          </div>
-          <div className="col-sm-6 col-md-4 col-lg-3">
-            <label htmlFor="fecha-hasta" className="form-label">Hasta</label>
-            <input
-              id="fecha-hasta"
-              type="date"
-              className="form-control"
-              value={fechaHasta}
-              onChange={(event) => {
-                setYear(null);
-                setFechaHasta(event.target.value);
-              }}
-              min={fechaDesde || undefined}
-            />
-          </div>
-          <div className="col-md-4 col-lg-3">
-            <label className="form-label d-block">&nbsp;</label>
-            <button
-              type="button"
-              className="btn btn-outline-primary w-100"
-              onClick={() => refetch()}
-              disabled={invalidRange}
-            >
-              Aplicar filtros
-            </button>
-          </div>
-          {invalidRange && (
-            <div className="col-12">
-              <div className="alert alert-warning py-2 mb-0">
-                La fecha inicial no puede ser posterior a la fecha final.
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {isLoading ? (
-        <p>Cargando citaciones...</p>
-      ) : isError ? (
-        <div className="alert alert-danger" role="alert">
-          {error?.message || 'No se pudo obtener la lista de citaciones.'}
-        </div>
-      ) : citaciones.length === 0 ? (
-        <div className="alert alert-info" role="alert">
-          No se encontraron citaciones para los filtros seleccionados.
-        </div>
-      ) : (
-        <>
-          {isFetching && (
-            <div className="alert alert-info py-2">
-              Actualizando resultados...
-            </div>
-          )}
-          <div className="row g-4">
-            {citaciones.map((citacion) => {
-              const fechaCitacion = parseISO(citacion.fecha);
-              const horasRestantes = differenceInHours(fechaCitacion, new Date());
-              const disponibleParaLicencia = horasRestantes >= 24;
-              const fechaTexto = citacion.fecha?.split('T')[0] ?? '—';
-              const horaTexto = citacion.fecha?.split('T')[1]?.slice(0, 5) ?? '—';
-
-              return (
-                <div className="col-md-6 col-lg-4 col-xl-3" key={citacion.id}>
-                  <div className="card shadow-sm border-0 h-100">
-                    <div className="card-body d-flex flex-column">
-                      <h6 className="fw-bold mb-1">{citacion.nombre}</h6>
-                      <span
-                        className={`badge mb-2 ${ disponibleParaLicencia ? 'bg-success' : 'bg-warning text-dark' }`}
-                      >
-                        {disponibleParaLicencia
-                          ? 'Disponible para licencia'
-                          : 'No disponible para licencia'}
-                      </span>
-
-                      <div className="text-muted small d-flex align-items-center gap-2">
-                        <CalendarDays size={16} />
-                        {fechaTexto}
-                      </div>
-                      <div className="text-muted small d-flex align-items-center gap-2">
-                        <Clock size={16} />
-                        {horaTexto}
-                      </div>
-                      <div className="text-muted small d-flex align-items-center gap-2">
-                        <MapPin size={16} />
-                        {citacion.lugar || '—'}
-                      </div>
-                      <div className="text-muted small d-flex align-items-center gap-2">
-                        <MapPin size={16} />
-                        {citacion.tenida || '—'}
-                      </div>
-                      <div className="text-muted small d-flex align-items-center gap-2 mb-2">
-                        <User size={16} />
-                        {citacion.autor_info?.username || '—'}
-                      </div>
-
-                      <div className="small mb-3 flex-grow-1">
-                        <strong>Descripción:</strong><br />
-                        {citacion.descripcion || 'Sin descripción'}
-                      </div>
-
-                      <div className="d-flex flex-column gap-2 mt-auto">
-                        <Link
-                          to={`/citaciones/${citacion.id}`}
-                          className="btn btn-outline-secondary btn-sm"
-                        >
-                          Ver detalle
-                        </Link>
-                        {disponibleParaLicencia && (
-                          <Link
-                            to={`/licencia/citacion/${citacion.id}`}
-                            className="btn btn-outline-primary btn-sm"
-                          >
-                            Solicitar Licencia
-                          </Link>
-                        )}
-                      </div>
+        {/* Filters Panel */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-end">
+                {/* Search */}
+                <div className="lg:col-span-2 space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Buscar Citación</label>
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-red-500 transition-colors" size={20} />
+                        <input
+                            type="text"
+                            className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-3 pl-12 pr-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 focus:ring-2 focus:ring-red-500/20 focus:bg-white dark:focus:bg-slate-700 transition-all outline-none"
+                            placeholder="Nombre, lugar o descripción..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                     </div>
+                </div>
+
+                {/* Year Selector */}
+                <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Filtrar por Año</label>
+                    <div className="flex flex-wrap gap-2">
+                        {years.map((year) => (
+                            <button
+                                key={year}
+                                onClick={() => setSelectedYear(year)}
+                                className={`
+                                    px-4 py-2 rounded-xl text-sm font-bold transition-all
+                                    ${selectedYear === year 
+                                        ? 'bg-red-600 text-white shadow-md shadow-red-100 dark:shadow-none' 
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}
+                                `}
+                            >
+                                {year}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Content Section */}
+        {isLoading ? (
+          <div className="py-20 flex flex-col items-center justify-center text-slate-500">
+            <Loader2 className="animate-spin mb-4 text-red-500" size={48} />
+            <p className="text-lg font-medium tracking-tight">Cargando registros...</p>
+          </div>
+        ) : filteredCitaciones.length === 0 ? (
+          <div className="py-20 text-center bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+            <Info className="mx-auto text-slate-300 dark:text-slate-700 mb-4" size={48} />
+            <p className="text-slate-500 dark:text-slate-400 font-medium italic">No se encontraron citaciones para los criterios seleccionados.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCitaciones.map((citacion) => {
+              const fecha = parseISO(citacion.fecha);
+              return (
+                <div 
+                    key={citacion.id} 
+                    className="group flex flex-col !bg-white dark:!bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-300 overflow-hidden"
+                >
+                  <div className="p-6 space-y-4 flex-1">
+                    <div className="space-y-1">
+                        <div className="flex justify-between items-start gap-2">
+                            <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
+                                {citacion.nombre}
+                            </h3>
+                            <span className="shrink-0 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase">
+                                #{citacion.id}
+                            </span>
+                        </div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            {format(fecha, 'EEEE dd MMMM', { locale: undefined })}
+                        </p>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-slate-50 dark:border-slate-800">
+                        <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                            <Clock className="text-red-500 shrink-0" size={16} />
+                            <span className="font-bold">{format(fecha, 'HH:mm')} hrs</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                            <MapPin className="text-red-500 shrink-0" size={16} />
+                            <span className="truncate">{citacion.lugar}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                            <User className="text-red-500 shrink-0" size={16} />
+                            <span className="truncate">Cita: <span className="font-bold">{citacion.autor_info?.username}</span></span>
+                        </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800">
+                    <Link
+                      to={`/citaciones/${citacion.id}`}
+                      className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 !bg-white dark:!bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold transition-all hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm"
+                    >
+                      <Info size={14} />
+                      Detalles del Historial
+                    </Link>
                   </div>
                 </div>
               );
             })}
           </div>
-        </>
-      )}
+        )}
+      </div>
     </Layout>
   );
 };

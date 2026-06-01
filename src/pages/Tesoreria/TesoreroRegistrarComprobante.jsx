@@ -57,20 +57,20 @@ const TesoreraRegistrarComprobante = () => {
     
     return (
         <Layout>
-            <div className="max-w-4xl mx-auto px-4 py-8">
-                <div className="!bg-white dark:!bg-slate-900 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none p-6 md:p-10 border border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-blue-50 dark:!bg-blue-900/30 rounded-2xl text-blue-600 dark:text-blue-400">
-                            <ClipboardList size={28} />
+            <div className="max-w-4xl mx-auto px-4 py-6 md:py-8">
+                <div className="!bg-white dark:!bg-slate-900 rounded-2xl md:rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none p-5 sm:p-8 md:p-10 border border-slate-100 dark:border-slate-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+                        <div className="p-2.5 sm:p-3 bg-blue-50 dark:!bg-blue-900/30 rounded-2xl text-blue-600 dark:text-blue-400 w-fit">
+                            <ClipboardList size={24} className="sm:w-7 sm:h-7" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Registrar Comprobante</h2>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm">Ingreso manual de pagos de cuotas</p>
+                            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Registrar Comprobante</h2>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm">Ingreso manual de pagos de cuotas</p>
                         </div>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
                                     <ClipboardList size={16} /> Nº de Comprobante
@@ -117,8 +117,8 @@ const TesoreraRegistrarComprobante = () => {
                                                     setValue('bombero', u.user.id, { shouldValidate: true });
                                                 }}
                                             >
-                                                <span className="font-semibold text-slate-700 dark:text-white">{u.user.first_name} {u.user.last_name}</span>
-                                                <span className="text-xs text-slate-500 dark:text-slate-400">{u.user.email}</span>
+                                                <span className="font-semibold text-slate-700 dark:text-white text-sm sm:text-base">{u.user.first_name} {u.user.last_name}</span>
+                                                <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">{u.user.email}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -143,7 +143,7 @@ const TesoreraRegistrarComprobante = () => {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
                                     <DollarSign size={16} /> Monto Total
@@ -180,7 +180,7 @@ const TesoreraRegistrarComprobante = () => {
                             <button 
                                 type="submit" 
                                 disabled={mutation.isPending}
-                                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-200 dark:shadow-none flex items-center justify-center gap-2 group"
+                                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-200 dark:shadow-none flex items-center justify-center gap-2 group active:scale-[0.98]"
                             >
                                 {mutation.isPending ? (
                                     <Loader2 className="animate-spin" size={20} />

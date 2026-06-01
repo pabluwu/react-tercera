@@ -18,17 +18,17 @@ const BandejaItem = ({ item, onAprobar, onRechazar }) => {
     };
 
     return (
-        <div className="!bg-white dark:!bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none mb-6 overflow-hidden transition-all duration-300">
-            <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
+        <div className="!bg-white dark:!bg-slate-900 rounded-2xl md:rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none mb-6 overflow-hidden transition-all duration-300">
+            <div className="p-5 md:p-8 flex flex-col lg:flex-row justify-between gap-6">
                 <div className="flex gap-4">
-                    <div className="w-14 h-14 bg-red-50 dark:!bg-red-900/20 rounded-2xl flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
-                        <User size={28} />
+                    <div className="w-12 h-12 md:w-14 md:h-14 bg-red-50 dark:!bg-red-900/20 rounded-2xl flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                        <User size={24} className="md:w-7 md:h-7" />
                     </div>
                     <div>
-                        <h4 className="text-xl font-black text-slate-800 dark:text-white mb-1 leading-tight">{item.bombero.nombre}</h4>
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400 font-bold">
+                        <h4 className="text-lg md:text-xl font-black text-slate-800 dark:text-white mb-1 leading-tight">{item.bombero.nombre}</h4>
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs md:text-sm text-slate-500 dark:text-slate-400 font-bold">
                             <span className="flex items-center gap-1.5 bg-slate-100 dark:!bg-slate-800 px-3 py-1 rounded-full">
-                                <Clock size={14} /> {new Date(item.fecha_envio).toLocaleDateString()}
+                                <Clock size={12} className="md:w-3.5 md:h-3.5" /> {new Date(item.fecha_envio).toLocaleDateString()}
                             </span>
                             <a 
                                 href={item.archivo} 
@@ -36,15 +36,15 @@ const BandejaItem = ({ item, onAprobar, onRechazar }) => {
                                 rel="noopener noreferrer" 
                                 className="flex items-center gap-1.5 text-red-600 hover:text-red-700 transition-colors"
                             >
-                                <ExternalLink size={14} /> Ver Comprobante
+                                <ExternalLink size={12} className="md:w-3.5 md:h-3.5" /> Ver Comprobante
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                     <button 
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${
+                        className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm transition-all duration-200 ${
                             showForm 
                                 ? 'bg-slate-100 text-slate-500 dark:!bg-slate-800 dark:text-slate-400' 
                                 : 'bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20'
@@ -54,7 +54,7 @@ const BandejaItem = ({ item, onAprobar, onRechazar }) => {
                         {showForm ? <><ChevronUp size={18} /> Cancelar</> : <><CheckCircle2 size={18} /> Aprobar</>}
                     </button>
                     <button 
-                        className="flex items-center gap-2 px-6 py-3 !bg-white dark:!bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 rounded-xl font-black text-sm border border-slate-200 dark:border-slate-700 hover:border-red-200 dark:hover:border-red-900/30 transition-all"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 !bg-white dark:!bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 rounded-xl font-black text-sm border border-slate-200 dark:border-slate-700 hover:border-red-200 dark:hover:border-red-900/30 transition-all"
                         onClick={() => onRechazar(item.id)}
                     >
                         <XCircle size={18} /> Rechazar
@@ -62,14 +62,14 @@ const BandejaItem = ({ item, onAprobar, onRechazar }) => {
                 </div>
             </div>
 
-            <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-4">
+            <div className="px-5 md:px-8 pb-6 md:pb-8 space-y-4">
                 <div className="flex flex-col gap-2">
-                    <span className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <span className="text-[10px] md:text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
                         <FileText size={14} className="text-red-600" /> Meses Declarados
                     </span>
                     <div className="flex flex-wrap gap-2">
                         {item.meses_pagados_detalle.map(m => (
-                            <span key={`${m.mes}-${m.anio}`} className="px-4 py-1.5 bg-slate-50 dark:!bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-black border border-slate-100 dark:border-slate-700">
+                            <span key={`${m.mes}-${m.anio}`} className="px-3 sm:px-4 py-1.5 bg-slate-50 dark:!bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-[10px] sm:text-xs font-black border border-slate-100 dark:border-slate-700">
                                 {m.mes} {m.anio}
                             </span>
                         ))}
@@ -77,7 +77,7 @@ const BandejaItem = ({ item, onAprobar, onRechazar }) => {
                 </div>
 
                 {showForm && (
-                    <form onSubmit={handleSubmit(handleAprobar)} className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-6 items-end animate-in fade-in slide-in-from-top-4 duration-300">
+                    <form onSubmit={handleSubmit(handleAprobar)} className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 items-end animate-in fade-in slide-in-from-top-4 duration-300">
                         <div className="space-y-2">
                             <label className="text-sm font-black text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
                                 <Hash size={16} className="text-red-600" /> Nº Comprobante
@@ -144,31 +144,31 @@ const TesoreroBandeja = () => {
 
     return (
         <Layout>
-            <div className="container mx-auto px-4 py-8 max-w-5xl">
-                <div className="flex items-center gap-4 mb-10">
-                    <div className="p-3 bg-red-50 dark:!bg-red-900/20 rounded-2xl text-red-600 dark:text-red-400">
-                        <Inbox size={28} />
+            <div className="container mx-auto px-4 py-6 md:py-8 max-w-5xl">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8 md:mb-10">
+                    <div className="p-2.5 sm:p-3 bg-red-50 dark:!bg-red-900/20 rounded-2xl text-red-600 dark:text-red-400 w-fit">
+                        <Inbox size={24} className="sm:w-7 sm:h-7" />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Bandeja de Entrada</h2>
-                        <p className="text-slate-500 dark:text-slate-400 font-medium">Comprobantes pendientes de revisión</p>
+                        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Bandeja de Entrada</h2>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium text-sm sm:text-base">Comprobantes pendientes de revisión</p>
                     </div>
                 </div>
 
                 {isLoading ? (
-                    <div className="!bg-white dark:!bg-slate-800 rounded-[2.5rem] shadow-xl p-20 text-center border border-slate-100 dark:border-slate-700">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent mb-6"></div>
-                        <p className="text-slate-500 dark:text-slate-400 font-black text-xl tracking-tight">Cargando bandeja...</p>
+                    <div className="!bg-white dark:!bg-slate-800 rounded-3xl md:rounded-[2.5rem] shadow-xl p-12 md:p-20 text-center border border-slate-100 dark:border-slate-700">
+                        <div className="inline-block animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-4 border-red-600 border-t-transparent mb-4 md:mb-6"></div>
+                        <p className="text-slate-500 dark:text-slate-400 font-black text-lg md:text-xl tracking-tight">Cargando bandeja...</p>
                     </div>
-                ) : data.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center p-20 !bg-white dark:!bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 text-center">
-                        <Inbox className="text-slate-200 dark:text-slate-700 mb-6" size={80} />
-                        <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">Bandeja Vacía</h3>
-                        <p className="text-slate-500 dark:text-slate-400 max-w-md font-medium">No hay comprobantes de transferencia pendientes de aprobación en este momento.</p>
+                ) : data?.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center p-12 md:p-20 !bg-white dark:!bg-slate-800 rounded-3xl md:rounded-[2.5rem] border border-slate-100 dark:border-slate-700 text-center">
+                        <Inbox className="text-slate-200 dark:text-slate-700 mb-6 w-16 h-16 md:w-20 md:h-20" size={80} />
+                        <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">Bandeja Vacía</h3>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-md font-medium text-sm md:text-base">No hay comprobantes de transferencia pendientes de aprobación en este momento.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-2">
-                        {data.map(item => (
+                        {data?.map(item => (
                             <BandejaItem
                                 key={item.id}
                                 item={item}
@@ -182,5 +182,6 @@ const TesoreroBandeja = () => {
         </Layout>
     );
 };
+
 
 export default TesoreroBandeja;

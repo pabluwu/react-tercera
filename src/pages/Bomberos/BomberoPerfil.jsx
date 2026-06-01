@@ -426,10 +426,10 @@ const BomberoPerfil = () => {
             <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Mi Perfil</h2>
             {isFetching && <RefreshCw size={20} className="animate-spin text-red-600" />}
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
               type="button"
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all duration-200 ${
+              className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all duration-200 w-full sm:w-auto ${
                 isEditing 
                   ? "bg-slate-200 text-slate-700 hover:bg-slate-300 dark:!bg-slate-700 dark:text-white" 
                   : "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20"
@@ -449,7 +449,7 @@ const BomberoPerfil = () => {
             </button>
             {!isEditing && (
               <button
-                className="flex items-center gap-2 px-5 py-2.5 !bg-white dark:!bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200"
+                className="flex items-center justify-center gap-2 px-5 py-2.5 !bg-white dark:!bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 w-full sm:w-auto"
                 type="button"
                 onClick={() => refetch()}
                 disabled={isFetching}

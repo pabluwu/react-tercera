@@ -126,6 +126,7 @@ const CrearListaAsistencia = () => {
                                     filtro={filtro}
                                     onFiltroChange={setFiltro}
                                     register={register}
+                                    watch={watch}
                                 />
                             </div>
 

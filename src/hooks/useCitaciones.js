@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchWithToken } from '../api/fetchWithToken';
 
-export const useCitaciones = ({ fechaDesde, fechaHasta, enabled = true }) => {
+export const useCitaciones = ({ fechaDesde, fechaHasta, enabled = true } = {}) => {
   return useQuery({
     queryKey: ['citaciones', fechaDesde ?? null, fechaHasta ?? null],
     queryFn: () => {

@@ -72,7 +72,7 @@ const MesesSelector = ({ value, onChange, name, error, bomberoId = null }) => {
                                     <div className="h-[1px] flex-grow bg-slate-100 dark:!bg-slate-800"></div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                                     {mesesOrdenados.map((mes) => {
                                         const monthIndex = Number(mes.mes) - 1;
                                         const nombreMes = MONTH_NAMES[monthIndex] || mes.mes;

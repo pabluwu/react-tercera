@@ -168,44 +168,44 @@ const RevisarCuotas = () => {
 
     return (
         <Layout>
-            <div className="container mx-auto px-4 py-8 max-w-6xl">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="container mx-auto px-4 py-6 md:py-8 max-w-6xl">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-red-50 dark:!bg-red-900/20 rounded-2xl text-red-600 dark:text-red-400">
-                            <Users size={28} />
+                        <div className="p-2.5 sm:p-3 bg-red-50 dark:!bg-red-900/20 rounded-2xl text-red-600 dark:text-red-400">
+                            <Users size={24} className="sm:w-7 sm:h-7" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Revisar Cuotas</h2>
-                            <p className="text-slate-500 dark:text-slate-400 font-medium">Estado general de pagos de la compañía</p>
+                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Revisar Cuotas</h2>
+                            <p className="text-slate-500 dark:text-slate-400 font-medium text-xs sm:text-sm">Estado general de pagos de la compañía</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="!bg-white dark:!bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden">
+                <div className="!bg-white dark:!bg-slate-900 rounded-2xl md:rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden">
                     {isLoading && (
-                        <div className="p-20 text-center">
+                        <div className="p-12 md:p-20 text-center">
                             <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-red-600 border-t-transparent mb-4"></div>
-                            <p className="text-slate-500 dark:text-slate-400 font-bold tracking-tight">Cargando resumen de cuotas...</p>
+                            <p className="text-slate-500 dark:text-slate-400 font-bold tracking-tight text-sm md:text-base">Cargando resumen de cuotas...</p>
                         </div>
                     )}
 
                     {isError && (
-                        <div className="p-10">
-                            <div className="flex items-center gap-4 p-5 bg-red-50 dark:!bg-red-900/20 text-red-700 dark:text-red-400 rounded-3xl border border-red-100 dark:border-red-900/30">
+                        <div className="p-4 md:p-10">
+                            <div className="flex items-center gap-3 md:gap-4 p-4 md:p-5 bg-red-50 dark:!bg-red-900/20 text-red-700 dark:text-red-400 rounded-2xl md:rounded-3xl border border-red-100 dark:border-red-900/30">
                                 <AlertTriangle className="shrink-0" size={24} />
-                                <p className="font-bold">{error?.message || "Ocurrió un error al obtener el resumen."}</p>
+                                <p className="font-bold text-sm md:text-base">{error?.message || "Ocurrió un error al obtener el resumen."}</p>
                             </div>
                         </div>
                     )}
 
                     {!isLoading && !isError && shouldRenderTable && (
-                        <div className="p-1">
+                        <div className="p-0.5 sm:p-1 overflow-x-auto">
                             <Tabla data={tableData} columns={columns} pageSize={20} />
                         </div>
                     )}
 
                     {!isLoading && !isError && !shouldRenderTable && (
-                        <div className="p-20 text-center text-slate-400 dark:text-slate-600 font-medium">
+                        <div className="p-12 md:p-20 text-center text-slate-400 dark:text-slate-600 font-medium text-sm md:text-base">
                             No hay información de cuotas para mostrar.
                         </div>
                     )}
