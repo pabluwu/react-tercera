@@ -1,0 +1,45 @@
+name: Deploy React Frontend to Staging
+
+on:
+  push:
+    branches:
+      - test  # Se activa al hacer push a la rama de pruebas
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Descargar el código del repositorio
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    # 2. Configurar Node.js usando la versión recomendada para Vite moderno
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    # 3. Instalar dependencias respetando el lockfile
+    - name: Instalar dependencias
+      run: npm ci
+
+    # 4. Compilar el proyecto para producción (Creará la carpeta /dist)
+    # Aquí inyectamos la URL de tu API de pruebas para que React sepa a dónde apuntar
+    - name: Compilar proyecto
+      env:
+        VITE_API_URL: http://test-api.terceraquillota.cl/api/  #
+      run: npm run build
+
+    # 5. Subir los archivos estáticos compilados al VPS vía RSYNC SSH
+    - name: Sincronizar archivos con el VPS
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}      # Tu IP: 109.123.252.124
+        username: ${{ secrets.SSH_USER }}  # root
+        key: ${{ secrets.SSH_KEY }}        # Tu llave privada SSH
+        port: 2022                         # Tu puerto SSH personalizado si aplica
+        source: "dist/*"                   # Vite compila dentro de la carpeta dist/
+        target: "/var/www/stage-front"
+        strip_components: 1                # Evita que se cree la carpeta "dist" dentro del VPS, sube solo el contenido
