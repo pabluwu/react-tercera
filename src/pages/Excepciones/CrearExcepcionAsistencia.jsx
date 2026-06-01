@@ -103,10 +103,10 @@ const CrearExcepcionAsistencia = () => {
 
     return (
         <Layout>
-            <div className="container bg-white p-4 rounded shadow-sm">
+            <div className="container-fluid bg-white p-3 p-md-4 rounded shadow-sm">
                 <h2 className="mb-4">Crear Excepción de Asistencia</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="row g-3">
-                    <div className="col-md-6">
+                    <div className="col-12 col-md-6">
                         <label className="form-label">Tipo de Excepción</label>
                         {loadingTipos ? (
                             <p>Cargando tipos...</p>
@@ -125,7 +125,7 @@ const CrearExcepcionAsistencia = () => {
                             </select>
                         )}
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-12 col-md-6">
                         <label className="form-label">Fecha de Inicio</label>
                         <input
                             className="form-control"
@@ -134,7 +134,7 @@ const CrearExcepcionAsistencia = () => {
                             required
                         />
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-12 col-md-6">
                         <label className="form-label">Fecha de Fin</label>
                         <input
                             className="form-control"
@@ -218,27 +218,29 @@ const CrearExcepcionAsistencia = () => {
                                             </td>
                                             <td>{new Date(excepcion.fecha_fin).toLocaleDateString()}</td>
                                             <td>
-                                                <button
-                                                    className="btn btn-sm btn-info me-2"
-                                                    onClick={() => handleVerDetalle(excepcion)}
-                                                    title="Ver detalle"
-                                                >
-                                                    <Eye size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn btn-sm btn-warning me-2"
-                                                    onClick={() => handleEditar(excepcion)}
-                                                    title="Editar"
-                                                >
-                                                    <Edit size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn btn-sm btn-danger"
-                                                    onClick={() => handleEliminar(excepcion)}
-                                                    title="Eliminar"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                <div className="d-flex gap-1 flex-wrap">
+                                                    <button
+                                                        className="btn btn-sm btn-info"
+                                                        onClick={() => handleVerDetalle(excepcion)}
+                                                        title="Ver detalle"
+                                                    >
+                                                        <Eye size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-warning"
+                                                        onClick={() => handleEditar(excepcion)}
+                                                        title="Editar"
+                                                    >
+                                                        <Edit size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-danger"
+                                                        onClick={() => handleEliminar(excepcion)}
+                                                        title="Eliminar"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -261,27 +263,27 @@ const CrearExcepcionAsistencia = () => {
                                 </div>
                                 <div className="modal-body">
                                     <div className="row">
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Tipo de Excepción:</strong>
                                             <p>{excepcionSeleccionada.tipo_excepcion}</p>
                                         </div>
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Bombero:</strong>
                                             <p>{excepcionSeleccionada.bombero.username} - {excepcionSeleccionada.bombero.first_name} {excepcionSeleccionada.bombero.last_name}</p>
                                         </div>
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Fecha de Inicio:</strong>
                                             <p>{new Date(excepcionSeleccionada.fecha_inicio).toLocaleDateString()}</p>
                                         </div>
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Fecha de Fin:</strong>
                                             <p>{new Date(excepcionSeleccionada.fecha_fin).toLocaleDateString()}</p>
                                         </div>
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Activa:</strong>
                                             <p>{excepcionSeleccionada.is_activa ? 'Sí' : 'No'}</p>
                                         </div>
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Autor:</strong>
                                             <p>{excepcionSeleccionada.autor_username}</p>
                                         </div>
@@ -289,11 +291,11 @@ const CrearExcepcionAsistencia = () => {
                                             <strong>Motivo:</strong>
                                             <p>{excepcionSeleccionada.motivo}</p>
                                         </div>
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Fecha de Creación:</strong>
                                             <p>{new Date(excepcionSeleccionada.created_at).toLocaleString()}</p>
                                         </div>
-                                        <div className="col-md-6 mb-3">
+                                        <div className="col-12 col-md-6 mb-3">
                                             <strong>Última Actualización:</strong>
                                             <p>{new Date(excepcionSeleccionada.updated_at).toLocaleString()}</p>
                                         </div>

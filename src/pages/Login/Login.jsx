@@ -62,8 +62,8 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary w-100 mt-2" disabled={mutation.isLoading}>
-            {mutation.isLoading ? 'Ingresando...' : 'Iniciar sesión'}
+          <button type="submit" className="btn btn-primary w-100 mt-2" disabled={mutation.isPending}>
+            {mutation.isPending ? 'Ingresando...' : 'Iniciar sesión'}
           </button>
         </form>
 

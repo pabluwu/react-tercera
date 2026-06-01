@@ -179,7 +179,7 @@ const Sidebar = () => {
                 <h5 className="text-danger fw-bold mb-4">FireControl</h5>
                 <p className="text-muted small">Sistema de Gestión</p>
                 <hr />
-                <nav className="nav flex-column" style={{ overflowY: 'auto' }}>
+                <nav className="nav flex-row" style={{ overflowY: 'auto' }}>
                     {menuItems.map(({ key, label, icon, children, path }) => (
                         <div key={key}>
                             <div

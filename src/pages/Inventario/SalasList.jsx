@@ -108,11 +108,11 @@ const SalasList = () => {
 
   return (
     <Layout>
-      <div className="container-fluid py-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="container-fluid py-3 py-md-4">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
           <h2>Gestión de Salas</h2>
           <button
-            className="btn btn-primary"
+            className="btn btn-primary w-100 w-md-auto"
             onClick={() => {
               setFormData({ nombre: '', descripcion: '', ubicacion: '' });
               setShowCreateModal(true);
@@ -159,7 +159,7 @@ const SalasList = () => {
                           <span className="badge bg-success">Activa</span>
                         </td>
                         <td>
-                          <div className="d-flex gap-2">
+                          <div className="d-flex gap-2 flex-wrap">
                             <button
                               className="btn btn-sm btn-info text-white"
                               onClick={() => navigate(`/inventario/salas/${sala.id}`)}

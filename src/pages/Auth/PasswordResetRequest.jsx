@@ -34,6 +34,8 @@ const PasswordResetRequest = () => {
     mutation.mutate(values);
   };
 
+  console.log(mutation)
+
   const rut = watch("rut");
 
   return (
@@ -57,9 +59,9 @@ const PasswordResetRequest = () => {
           <button
             type="submit"
             className="btn btn-primary w-100"
-            disabled={mutation.isLoading || isSubmitting}
+            disabled={mutation.isPending }
           >
-            {mutation.isLoading ? "Enviando..." : "Enviar enlace"}
+            {mutation.isPending ? "Enviando..." : "Enviar enlace"}
           </button>
         </form>
 

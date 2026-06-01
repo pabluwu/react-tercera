@@ -163,8 +163,8 @@ const SalaDetail = () => {
 
   return (
     <Layout>
-      <div className="container-fluid py-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="container-fluid py-3 py-md-4">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
           <div>
             <button
               className="btn btn-link text-decoration-none mb-2"
@@ -175,7 +175,7 @@ const SalaDetail = () => {
             <h2>{sala?.nombre || 'Detalle de Sala'}</h2>
           </div>
           <button
-            className="btn btn-primary"
+            className="btn btn-primary w-100 w-md-auto"
             onClick={() => {
               setItemFormData({ nombre: '', descripcion: '', codigo: '', cantidad: 1, estado: 'Bueno' });
               setShowCreateItemModal(true);
@@ -256,7 +256,7 @@ const SalaDetail = () => {
                           </span>
                         </td>
                         <td>
-                          <div className="d-flex gap-2 flex-wrap">
+                          <div className="d-flex gap-1 flex-wrap">
                             <button
                               className="btn btn-sm btn-primary"
                               onClick={() => openEditItemModal(item)}

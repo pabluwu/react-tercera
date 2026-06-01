@@ -84,9 +84,9 @@ const PasswordResetConfirm = () => {
           <button
             type="submit"
             className="btn btn-primary w-100"
-            disabled={mutation.isLoading || isSubmitting}
+            disabled={mutation.isPending || isSubmitting}
           >
-            {mutation.isLoading ? "Actualizando..." : "Actualizar contraseña"}
+            {mutation.isPending ? "Actualizando..." : "Actualizar contraseña"}
           </button>
         </form>
 
