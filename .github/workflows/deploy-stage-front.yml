@@ -39,7 +39,7 @@ jobs:
       with:
         host: ${{ secrets.SSH_HOST }}      # Tu IP: 109.123.252.124
         username: ${{ secrets.SSH_USER }}  # root
-        key: ${{ secrets.SSH_KEY }}        # Tu llave privada SSH
+        key: ${{ secrets.SSH_PRIVATE_KEY }}        # Tu llave privada SSH
         port: 2022                         # Tu puerto SSH personalizado si aplica
         source: "dist/*"                   # Vite compila dentro de la carpeta dist/
         target: "/var/www/stage-front"
