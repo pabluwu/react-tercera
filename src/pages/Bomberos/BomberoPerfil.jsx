@@ -6,6 +6,22 @@ import Layout from "../../layout/Layout";
 import { fetchWithToken } from "../../api/fetchWithToken";
 import { API_BASE_URL } from "../../api/apiConfig";
 import { toast } from "react-toastify";
+import { 
+  User, 
+  Edit3, 
+  RefreshCw, 
+  Camera, 
+  XCircle, 
+  Shield, 
+  Info,
+  Mail,
+  Phone,
+  Calendar,
+  CreditCard,
+  MapPin,
+  Save,
+  ChevronLeft
+} from "lucide-react";
 
 const getFirstValue = (source, keys) => {
   if (!source) return undefined;
@@ -228,8 +244,8 @@ const BomberoPerfil = () => {
     setIsEditing((prev) => !prev);
   };
 
-  const { details, profileImage } = useMemo(() => {
-    if (!data) return { details: [], profileImage: null };
+  const { details, profileImage, fullName, initials, role, cia, email, phone } = useMemo(() => {
+    if (!data) return { details: [], profileImage: null, fullName: "", initials: "", role: "", cia: "", email: "", phone: "" };
 
     const profile = data.profile || data.perfil || {};
     const profileUser = profile.user || {};
@@ -259,6 +275,7 @@ const BomberoPerfil = () => {
       getFirstValue(profileUser, ["last_name", "apellido", "apellidos"]) ||
       "";
     const fullName = `${nombres} ${lastName}`.trim() || "-";
+    const initials = (nombres[0] || "") + (lastName[0] || "");
 
     const rut =
       getFirstValue(data, ["rut", "documento", "rut_bombero"]) ||
@@ -345,32 +362,30 @@ const BomberoPerfil = () => {
       "-";
 
     const detailsList = [
-      { label: "Nombre completo", value: fullName },
-      { label: "Nombres", value: nombres || "-" },
-      { label: "Apellido paterno", value: apellidoPaterno || "-" },
-      { label: "Apellido materno", value: apellidoMaterno || "-" },
-      { label: "Compañía / CIA", value: cia },
-      { label: "Registro general", value: registro },
-      { label: "Registro en compañía", value: registroCia },
-      { label: "Código de llamado", value: codigoLlamado },
-      { label: "Cargo", value: role },
-      { label: "Sexo", value: sexo },
-      { label: "Nacionalidad", value: nacionalidad },
-      { label: "Grupo sanguíneo", value: sangreGrupo },
-      { label: "Estado civil", value: estadoCivil },
-      { label: "Profesión", value: profesion },
-      { label: "Dirección", value: direccionDetalle },
-      { label: "Correo electrónico", value: email },
-      { label: "RUT", value: rut },
-      { label: "Teléfono", value: phone },
-      { label: "Contacto de emergencia", value: emergencyContact },
-      { label: "Nombre de compañía", value: company },
-      { label: "Usuario", value: getFirstValue(data, ["username"]) || "-" },
-      { label: "ID de usuario", value: data.id ?? "-" },
-      { label: "Fecha de ingreso", value: joinDate },
+      { label: "Nombres", value: nombres || "-", icon: User },
+      { label: "Apellido paterno", value: apellidoPaterno || "-", icon: User },
+      { label: "Apellido materno", value: apellidoMaterno || "-", icon: User },
+      { label: "Compañía / CIA", value: cia, icon: Shield },
+      { label: "Registro general", value: registro, icon: CreditCard },
+      { label: "Registro en compañía", value: registroCia, icon: CreditCard },
+      { label: "Código de llamado", value: codigoLlamado, icon: Phone },
+      { label: "Cargo", value: role, icon: Shield },
+      { label: "Sexo", value: sexo, icon: User },
+      { label: "Nacionalidad", value: nacionalidad, icon: Info },
+      { label: "Grupo sanguíneo", value: sangreGrupo, icon: Info },
+      { label: "Estado civil", value: estadoCivil, icon: Info },
+      { label: "Profesión", value: profesion, icon: Info },
+      { label: "Dirección", value: direccionDetalle, icon: MapPin },
+      { label: "Correo electrónico", value: email, icon: Mail },
+      { label: "RUT", value: rut, icon: CreditCard },
+      { label: "Teléfono", value: phone, icon: Phone },
+      { label: "Contacto de emergencia", value: emergencyContact, icon: Phone },
+      { label: "Nombre de compañía", value: company, icon: Shield },
+      { label: "Usuario", value: getFirstValue(data, ["username"]) || "-", icon: User },
+      { label: "Fecha de ingreso", value: joinDate, icon: Calendar },
     ];
 
-    return { details: detailsList, profileImage };
+    return { details: detailsList, profileImage, fullName, initials, role, cia, email, phone };
   }, [data]);
 
   const permissions = useMemo(() => {
@@ -393,8 +408,8 @@ const BomberoPerfil = () => {
       null;
 
     return [
-      estado && { label: "Estado", value: estado },
-      categoria && { label: "Categoría", value: categoria },
+      estado && { label: "Estado", value: estado, color: "blue" },
+      categoria && { label: "Categoría", value: categoria, color: "red" },
     ].filter(Boolean);
   }, [data]);
 
@@ -405,372 +420,317 @@ const BomberoPerfil = () => {
 
   return (
     <Layout>
-      <div className="container rounded shadow-sm bg-white p-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="mb-0">Mi perfil</h2>
-          <div className="d-flex gap-2">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Mi Perfil</h2>
+            {isFetching && <RefreshCw size={20} className="animate-spin text-red-600" />}
+          </div>
+          <div className="flex gap-3">
             <button
               type="button"
-              className="btn btn-outline-primary btn-sm"
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all duration-200 ${
+                isEditing 
+                  ? "bg-slate-200 text-slate-700 hover:bg-slate-300 dark:!bg-slate-700 dark:text-white" 
+                  : "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20"
+              }`}
               onClick={handleToggleEdit}
               disabled={isLoading || updateProfile.isLoading}
             >
-              {isEditing ? "Cancelar" : "Editar"}
+              {isEditing ? (
+                <>
+                  <ChevronLeft size={20} /> Cancelar
+                </>
+              ) : (
+                <>
+                  <Edit3 size={20} /> Editar Perfil
+                </>
+              )}
             </button>
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              type="button"
-              onClick={() => refetch()}
-              disabled={isFetching}
-            >
-              {isFetching ? "Actualizando..." : "Actualizar"}
-            </button>
+            {!isEditing && (
+              <button
+                className="flex items-center gap-2 px-5 py-2.5 !bg-white dark:!bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200"
+                type="button"
+                onClick={() => refetch()}
+                disabled={isFetching}
+              >
+                <RefreshCw size={20} className={isFetching ? "animate-spin" : ""} />
+                Actualizar
+              </button>
+            )}
           </div>
         </div>
 
         {mismatchedUser && (
-          <div className="alert alert-warning">
-            Estás viendo tu propio perfil. El identificador en la URL no coincide
-            con el de tu sesión actual.
+          <div className="mb-6 flex items-start gap-4 p-4 bg-amber-50 dark:!bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-2xl border border-amber-100 dark:border-amber-900/30">
+            <Info className="shrink-0 mt-0.5" size={20} />
+            <p className="text-sm font-medium">
+              Estás viendo tu propio perfil. El identificador en la URL no coincide con el de tu sesión actual.
+            </p>
           </div>
         )}
 
-        {isLoading && <div>Cargando información del perfil...</div>}
+        {isLoading && (
+          <div className="!bg-white dark:!bg-slate-800 rounded-3xl shadow-xl p-12 text-center border border-slate-100 dark:border-slate-700">
+             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent mb-4"></div>
+             <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">Cargando información del perfil...</p>
+          </div>
+        )}
 
         {isError && (
-          <div className="alert alert-danger" role="alert">
-            {error?.message || "No se pudo obtener la información del perfil."}
+          <div className="!bg-white dark:!bg-slate-800 rounded-3xl shadow-xl p-12 text-center border border-red-100 dark:border-red-900/30">
+            <XCircle size={48} className="mx-auto text-red-600 mb-4" />
+            <p className="text-red-700 dark:text-red-400 font-bold text-lg mb-2">Error al cargar perfil</p>
+            <p className="text-slate-500 dark:text-slate-400">{error?.message || "No se pudo obtener la información."}</p>
           </div>
         )}
 
         {!isLoading && !isError && data && (
-          <>
-            {!isEditing ? (
-              <>
-                {(profileImage || badges.length > 0) && (
-                  <div className="mb-3 d-flex flex-wrap gap-2">
-                    {profileImage && (
-                      <div
-                        className="border rounded p-2 d-flex align-items-center"
-                        style={{ maxWidth: 160 }}
-                      >
-                        <img
-                          src={profileImage}
-                          alt="Foto de perfil del bombero"
-                          className="img-fluid rounded"
-                          style={{ maxHeight: 120, objectFit: "cover" }}
-                        />
-                      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Sidebar Column */}
+            <div className="lg:col-span-4 space-y-8">
+              {/* Profile Card */}
+              <div className="!bg-white dark:!bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden text-center p-8 relative">
+                <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-red-600 to-red-800"></div>
+                
+                <div className="relative mt-4 mb-6 inline-block">
+                  <div className="w-32 h-32 rounded-3xl bg-slate-100 dark:!bg-slate-800 border-4 border-white dark:border-slate-900 shadow-xl overflow-hidden mx-auto flex items-center justify-center">
+                    {profileImage ? (
+                      <img
+                        src={profileImage}
+                        alt={fullName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-4xl font-black text-slate-300 dark:text-slate-600 uppercase">
+                        {initials}
+                      </span>
                     )}
-                    {badges.map(({ label, value }) => (
-                      <span
-                        key={label}
-                        className="badge bg-primary-subtle text-primary"
-                      >
-                        {label}: {value}
+                  </div>
+                  {!isEditing && (
+                    <div className="absolute -bottom-2 -right-2 bg-red-600 text-white p-2 rounded-xl shadow-lg border-2 border-white dark:border-slate-900">
+                      <Shield size={16} />
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-1">{fullName}</h3>
+                <p className="text-slate-500 dark:text-slate-400 font-bold mb-6 flex items-center justify-center gap-1">
+                  {role} <span className="text-slate-300">•</span> {cia}
+                </p>
+
+                <div className="flex flex-wrap justify-center gap-2 mb-8">
+                  {badges.map(({ label, value, color }) => (
+                    <span
+                      key={label}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider ${
+                        color === 'red' 
+                          ? 'bg-red-50 text-red-600 dark:!bg-red-900/20 dark:text-red-400' 
+                          : 'bg-blue-50 text-blue-600 dark:!bg-blue-900/20 dark:text-blue-400'
+                      }`}
+                    >
+                      {label}: {value}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="space-y-3 pt-6 border-t border-slate-100 dark:border-slate-800 text-left">
+                  <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+                    <Mail size={18} className="text-red-600" />
+                    <span className="text-sm font-medium truncate">{email}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+                    <Phone size={18} className="text-red-600" />
+                    <span className="text-sm font-medium">{phone}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Permissions Card */}
+              <div className="!bg-white dark:!bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 p-8">
+                <h4 className="text-lg font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+                  <Shield size={20} className="text-red-600" /> Permisos asignados
+                </h4>
+                {permissions.length === 0 ? (
+                  <p className="text-slate-400 dark:text-slate-500 text-sm font-medium italic">
+                    No hay permisos especiales asignados.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {permissions.map((permiso) => (
+                      <span key={permiso} className="px-3 py-1.5 bg-slate-50 dark:!bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold border border-slate-100 dark:border-slate-700">
+                        {permiso}
                       </span>
                     ))}
                   </div>
                 )}
-
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="list-group mb-3">
-                      {details
-                        .slice(0, Math.ceil(details.length / 2))
-                        .map((item) => (
-                          <div key={item.label} className="list-group-item">
-                            <small className="text-muted d-block">
-                              {item.label}
-                            </small>
-                            <span className="fw-semibold">{item.value}</span>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="list-group mb-3">
-                      {details
-                        .slice(Math.ceil(details.length / 2))
-                        .map((item) => (
-                          <div key={item.label} className="list-group-item">
-                            <small className="text-muted d-block">
-                              {item.label}
-                            </small>
-                            <span className="fw-semibold">{item.value}</span>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h5>Permisos</h5>
-                  {permissions.length === 0 ? (
-                    <p className="text-muted">
-                      No se encontraron permisos asignados.
-                    </p>
-                  ) : (
-                    <div className="d-flex flex-wrap gap-2">
-                      {permissions.map((permiso) => (
-                        <span key={permiso} className="badge bg-secondary">
-                          {permiso}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="mt-3">
-                <h5>Editar información</h5>
-                <form className="row g-3" onSubmit={onSubmit}>
-                  <div className="col-md-4">
-                    <label htmlFor="nombres" className="form-label">
-                      Nombres
-                    </label>
-                    <input
-                      id="nombres"
-                      type="text"
-                      className="form-control"
-                      {...register("nombres")}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="apellido_paterno" className="form-label">
-                      Apellido paterno
-                    </label>
-                    <input
-                      id="apellido_paterno"
-                      type="text"
-                      className="form-control"
-                      {...register("apellido_paterno")}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="apellido_materno" className="form-label">
-                      Apellido materno
-                    </label>
-                    <input
-                      id="apellido_materno"
-                      type="text"
-                      className="form-control"
-                      {...register("apellido_materno")}
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <label htmlFor="email" className="form-label">
-                      Correo electrónico
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      className="form-control"
-                      {...register("email")}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="rut" className="form-label">
-                      RUT
-                    </label>
-                    <input
-                      id="rut"
-                      type="text"
-                      className="form-control"
-                      {...register("rut")}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="sexo" className="form-label">
-                      Sexo
-                    </label>
-                    <input
-                      id="sexo"
-                      type="text"
-                      className="form-control"
-                      {...register("sexo")}
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label htmlFor="telefono" className="form-label">
-                      Teléfono
-                    </label>
-                    <input
-                      id="telefono"
-                      type="tel"
-                      className="form-control"
-                      {...register("telefono")}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label htmlFor="contacto" className="form-label">
-                      Contacto de emergencia
-                    </label>
-                    <input
-                      id="contacto"
-                      type="tel"
-                      className="form-control"
-                      {...register("contacto")}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label htmlFor="fecha_ingreso" className="form-label">
-                      Fecha de ingreso
-                    </label>
-                    <input
-                      id="fecha_ingreso"
-                      type="date"
-                      className="form-control"
-                      {...register("fecha_ingreso")}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label htmlFor="nacionalidad" className="form-label">
-                      Nacionalidad
-                    </label>
-                    <input
-                      id="nacionalidad"
-                      type="text"
-                      className="form-control"
-                      {...register("nacionalidad")}
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label htmlFor="cia" className="form-label">
-                      Compañía / CIA
-                    </label>
-                    <input
-                      id="cia"
-                      type="text"
-                      className="form-control"
-                      {...register("cia")}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label htmlFor="registro" className="form-label">
-                      Registro general
-                    </label>
-                    <input
-                      id="registro"
-                      type="text"
-                      className="form-control"
-                      {...register("registro")}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label htmlFor="registro_cia" className="form-label">
-                      Registro en compañía
-                    </label>
-                    <input
-                      id="registro_cia"
-                      type="text"
-                      className="form-control"
-                      {...register("registro_cia")}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label htmlFor="codigo_llamado" className="form-label">
-                      Código de llamado
-                    </label>
-                    <input
-                      id="codigo_llamado"
-                      type="text"
-                      className="form-control"
-                      {...register("codigo_llamado")}
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <label htmlFor="cargo" className="form-label">
-                      Cargo
-                    </label>
-                    <input
-                      id="cargo"
-                      type="text"
-                      className="form-control"
-                      {...register("cargo")}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="sangre_grupo" className="form-label">
-                      Grupo sanguíneo
-                    </label>
-                    <input
-                      id="sangre_grupo"
-                      type="text"
-                      className="form-control"
-                      {...register("sangre_grupo")}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="estado_civil" className="form-label">
-                      Estado civil
-                    </label>
-                    <input
-                      id="estado_civil"
-                      type="text"
-                      className="form-control"
-                      {...register("estado_civil")}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label htmlFor="profesion" className="form-label">
-                      Profesión
-                    </label>
-                    <input
-                      id="profesion"
-                      type="text"
-                      className="form-control"
-                      {...register("profesion")}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="direccion_detalle" className="form-label">
-                      Dirección (detalle)
-                    </label>
-                    <textarea
-                      id="direccion_detalle"
-                      className="form-control"
-                      rows="1"
-                      {...register("direccion_detalle")}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label htmlFor="imagen" className="form-label">
-                      Foto de perfil
-                    </label>
-                    <input
-                      id="imagen"
-                      type="file"
-                      className="form-control"
-                      accept="image/*"
-                      {...register("imagen")}
-                    />
-                    <small className="text-muted">
-                      Selecciona un archivo para actualizar la imagen.
-                    </small>
-                  </div>
-
-                  <div className="col-12 d-flex justify-content-end">
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      disabled={isSubmitting || updateProfile.isLoading}
-                    >
-                      {updateProfile.isLoading
-                        ? "Guardando..."
-                        : "Guardar cambios"}
-                    </button>
-                  </div>
-                </form>
               </div>
-            )}
-          </>
+            </div>
+
+            {/* Main Content Column */}
+            <div className="lg:col-span-8">
+              {!isEditing ? (
+                <div className="!bg-white dark:!bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden">
+                  <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <h4 className="text-xl font-black text-slate-800 dark:text-white">Detalles del Personal</h4>
+                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-50 dark:!bg-slate-800 px-4 py-1.5 rounded-full border border-slate-100 dark:border-slate-700">ID: {data.id}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-slate-100 dark:!bg-slate-800">
+                    {details.map((item) => (
+                      <div key={item.label} className="!bg-white dark:!bg-slate-900 p-6 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <div className="p-3 bg-red-50 dark:!bg-red-900/10 rounded-2xl text-red-600 dark:text-red-400 shrink-0 h-fit">
+                          <item.icon size={20} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                            {item.label}
+                          </p>
+                          <p className="text-slate-800 dark:text-slate-200 font-bold leading-tight">
+                            {item.value}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="!bg-white dark:!bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 p-8 md:p-10">
+                  <h4 className="text-2xl font-black text-slate-800 dark:text-white mb-8 flex items-center gap-3">
+                    <Edit3 size={24} className="text-red-600" /> Editar información
+                  </h4>
+                  
+                  <form onSubmit={onSubmit} className="space-y-8">
+                    {/* Basic Info Section */}
+                    <div className="space-y-6">
+                      <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">Datos Personales</h5>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Nombres</label>
+                          <input
+                            {...register("nombres")}
+                            className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Apellido paterno</label>
+                          <input
+                            {...register("apellido_paterno")}
+                            className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Apellido materno</label>
+                          <input
+                            {...register("apellido_materno")}
+                            className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Correo electrónico</label>
+                          <input
+                            type="email"
+                            {...register("email")}
+                            className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">RUT</label>
+                          <input
+                            {...register("rut")}
+                            className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Info Section */}
+                    <div className="space-y-6">
+                      <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">Información Adicional</h5>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Sexo</label>
+                          <input {...register("sexo")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Teléfono</label>
+                          <input type="tel" {...register("telefono")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Emergencia</label>
+                          <input type="tel" {...register("contacto")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Ingreso</label>
+                          <input type="date" {...register("fecha_ingreso")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">CIA</label>
+                          <input {...register("cia")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Registro Gral</label>
+                          <input {...register("registro")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Registro CIA</label>
+                          <input {...register("registro_cia")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Código</label>
+                          <input {...register("codigo_llamado")} className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Files Section */}
+                    <div className="space-y-6">
+                      <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">Archivos y Multimedia</h5>
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Foto de perfil</label>
+                        <div className="flex items-center gap-4 p-6 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-[2rem] bg-slate-50 dark:!bg-slate-800/50">
+                          <Camera className="text-slate-400" size={32} />
+                          <div className="flex-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              {...register("imagen")}
+                              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-black file:bg-red-600 file:text-white hover:file:bg-red-700 transition-all cursor-pointer"
+                            />
+                            <p className="mt-2 text-xs text-slate-400 font-bold">Máximo 5MB. Formatos JPG, PNG.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-4 pt-8 border-t border-slate-100 dark:border-slate-800">
+                      <button
+                        type="button"
+                        onClick={handleToggleEdit}
+                        className="px-8 py-4 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-all"
+                      >
+                        Descartar
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting || updateProfile.isLoading}
+                        className="px-10 py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-xl shadow-red-600/20 flex items-center gap-2 active:scale-[0.98] transition-all disabled:opacity-70"
+                      >
+                        <Save size={20} />
+                        {updateProfile.isLoading ? "Guardando..." : "Guardar Cambios"}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </Layout>

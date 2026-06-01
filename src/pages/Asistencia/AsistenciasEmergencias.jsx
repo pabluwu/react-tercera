@@ -5,6 +5,7 @@ import Layout from "../../layout/Layout";
 import Tabla from "../../components/Tabla";
 import { fetchWithToken } from "../../api/fetchWithToken";
 import { format } from "date-fns";
+import { RefreshCw, PlusCircle, Flame } from "lucide-react";
 
 const formatFecha = (isoDate) => {
   if (!isoDate) return "—";
@@ -34,81 +35,102 @@ const AsistenciasEmergencias = () => {
 
   return (
     <Layout>
-      <div className="container rounded shadow-sm bg-white p-4">
-        <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+      <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 !bg-white dark:!bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
           <div>
-            <h2 className="mb-1">Asistencias de emergencias</h2>
-            <p className="text-muted mb-0">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Asistencias de emergencias</h2>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">
               Consulta las listas de asistencia generadas para cada emergencia
             </p>
           </div>
-          <div className="d-flex gap-2">
+          <div className="flex gap-3 w-full md:w-auto">
             <button
               type="button"
-              className="btn btn-outline-secondary btn-sm"
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 dark:!bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-xl font-medium transition-all active:scale-95 disabled:opacity-50"
               onClick={() => refetch()}
               disabled={isLoading || isFetching}
             >
-              {isFetching ? "Actualizando..." : "Actualizar"}
+              <RefreshCw size={18} className={isFetching ? "animate-spin" : ""} />
+              <span>{isFetching ? "Actualizando..." : "Actualizar"}</span>
             </button>
-            <Link to="/lista/crear" className="btn btn-primary btn-sm">
-              Nueva lista
+            <Link 
+              to="/lista/crear" 
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-xl font-medium transition-all active:scale-95 shadow-sm shadow-red-200 dark:shadow-none"
+            >
+              <PlusCircle size={18} />
+              <span>Nueva lista</span>
             </Link>
           </div>
         </div>
 
-        {isLoading ? (
-          <div>Cargando listas de asistencia...</div>
-        ) : isError ? (
-          <div className="alert alert-danger" role="alert">
-            {error?.message || "No se pudo obtener la información de asistencia."}
-          </div>
-        ) : emergencias.length === 0 ? (
-          <div className="alert alert-info" role="alert">
-            No se encontraron listas de asistencia para emergencias.
-          </div>
-        ) : (
-          <Tabla
-            data={emergencias}
-            columns={[
-              {
-                accessorKey: "evento.id",
-                header: "ID evento",
-                cell: (info) => info.row.original.evento?.id ?? "—",
-              },
-              {
-                accessorKey: "evento.clave",
-                header: "Clave",
-                cell: (info) => info.row.original.evento?.clave ?? "—",
-              },
-              {
-                accessorKey: "evento.fecha",
-                header: "Fecha",
-                cell: (info) => formatFecha(info.row.original.evento?.fecha),
-              },
-              {
-                accessorKey: "evento.unidades",
-                header: "Unidades",
-                cell: (info) => info.row.original.evento?.unidades ?? "—",
-              },
-              {
-                id: "acciones",
-                header: "Acciones",
-                cell: (info) => (
-                  <div className="d-flex justify-content-center">
-                    <Link
-                      to={`/asistencia/detalle/emergencia/${info.row.original.evento?.id}`}
-                      className="btn btn-outline-primary btn-sm"
-                    >
-                      Ver detalle
-                    </Link>
-                  </div>
-                ),
-              },
-            ]}
-            pageSize={8}
-          />
-        )}
+        <div className="!bg-white dark:!bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12 text-slate-400">
+              <RefreshCw size={24} className="animate-spin mr-3" />
+              <span>Cargando listas de asistencia...</span>
+            </div>
+          ) : isError ? (
+            <div className="p-4 bg-red-50 dark:!bg-red-500/10 text-red-600 dark:text-red-500 rounded-2xl border border-red-100 dark:border-red-500/20 text-sm">
+              {error?.message || "No se pudo obtener la información de asistencia."}
+            </div>
+          ) : emergencias.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:!bg-slate-800 flex items-center justify-center text-slate-300 dark:text-slate-600 mb-4">
+                <Flame size={32} />
+              </div>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">No se encontraron listas de asistencia para emergencias.</p>
+            </div>
+          ) : (
+            <Tabla
+              data={emergencias}
+              columns={[
+                {
+                  accessorKey: "evento.id",
+                  header: "ID",
+                  cell: (info) => (
+                    <span className="font-mono text-xs text-slate-400">{info.row.original.evento?.id ?? "—"}</span>
+                  ),
+                },
+                {
+                  accessorKey: "evento.clave",
+                  header: "Clave",
+                  cell: (info) => (
+                    <span className="font-bold text-red-600 dark:text-red-500">{info.row.original.evento?.clave ?? "—"}</span>
+                  ),
+                },
+                {
+                  accessorKey: "evento.fecha",
+                  header: "Fecha",
+                  cell: (info) => (
+                    <span className="text-slate-500 dark:text-slate-400">{formatFecha(info.row.original.evento?.fecha)}</span>
+                  ),
+                },
+                {
+                  accessorKey: "evento.unidades",
+                  header: "Unidades",
+                  cell: (info) => (
+                    <span className="text-slate-500 dark:text-slate-400">{info.row.original.evento?.unidades ?? "—"}</span>
+                  ),
+                },
+                {
+                  id: "acciones",
+                  header: "Acciones",
+                  cell: (info) => (
+                    <div className="flex justify-end">
+                      <Link
+                        to={`/asistencia/detalle/emergencia/${info.row.original.evento?.id}`}
+                        className="px-4 py-1.5 !bg-white dark:!bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium hover:border-red-500 hover:text-red-600 dark:hover:text-red-500 transition-all shadow-sm"
+                      >
+                        Ver detalle
+                      </Link>
+                    </div>
+                  ),
+                },
+              ]}
+              pageSize={8}
+            />
+          )}
+        </div>
       </div>
     </Layout>
   );

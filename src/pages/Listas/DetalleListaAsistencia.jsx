@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchWithToken } from '../../api/fetchWithToken';
 import { format } from 'date-fns';
 import Layout from '../../layout/Layout';
+import { ClipboardList, Calendar, MapPin, Tag, UserCheck, UserX, AlertCircle, Info, Bookmark, Flame, Clock, Hash } from 'lucide-react';
 
 const DetalleListaAsistencia = () => {
     const { id } = useParams();
@@ -12,42 +13,90 @@ const DetalleListaAsistencia = () => {
         queryFn: () => fetchWithToken(`/listas-asistencia/${id}/`),
     });
 
-    if (isLoading) return <div className="container mt-4">Cargando...</div>;
-    if (error || !data) return <div className="container mt-4 text-danger">Error al cargar los datos</div>;
+    if (isLoading) return (
+        <Layout>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                <Hash size={32} className="animate-spin mb-4" />
+                <p className="font-medium">Cargando detalles de la lista...</p>
+            </div>
+        </Layout>
+    );
+
+    if (error || !data) return (
+        <Layout>
+            <div className="max-w-4xl mx-auto p-8 bg-red-50 dark:!bg-red-500/10 text-red-600 dark:text-red-500 rounded-3xl border border-red-100 dark:border-red-500/20 shadow-sm flex items-center gap-4 mt-8">
+                <AlertCircle size={24} />
+                <span className="font-medium">Error al cargar los datos de la lista de asistencia.</span>
+            </div>
+        </Layout>
+    );
 
     const { evento, tipo, fecha_creacion, asistencias, licencias, excepciones, total_excepciones } = data;
 
     const renderEventoDetalle = () => {
-        if (tipo === 'citacion') {
+        if (tipo === 'citacion' || tipo === 'Licencia Extendida') {
             return (
-                <>
-                    <p><strong>Nombre:</strong> {evento.nombre}</p>
-                    <p><strong>Descripción:</strong> {evento.descripcion || '-'}</p>
-                    <p><strong>Lugar:</strong> {evento.lugar}</p>
-                    <p><strong>Tenida:</strong> {evento.tenida}</p>
-                    <p><strong>Fecha:</strong> {format(new Date(evento.fecha), 'dd-MM-yyyy HH:mm')}</p>
-                </>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                        <div className="space-y-1">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">Nombre</p>
+                            <p className="text-slate-800 dark:text-white font-bold text-lg">{evento.nombre}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">Descripción</p>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm">{evento.descripcion || 'Sin descripción'}</p>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 p-2 bg-slate-100 dark:!bg-slate-800 rounded-lg text-slate-500"><MapPin size={16} /></div>
+                            <div className="space-y-0.5">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lugar</p>
+                                <p className="text-slate-700 dark:text-slate-200 text-sm font-medium">{evento.lugar}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 p-2 bg-slate-100 dark:!bg-slate-800 rounded-lg text-slate-500"><Tag size={16} /></div>
+                            <div className="space-y-0.5">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tenida</p>
+                                <p className="text-slate-700 dark:text-slate-200 text-sm font-medium">{evento.tenida}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 p-2 bg-slate-100 dark:!bg-slate-800 rounded-lg text-slate-500"><Calendar size={16} /></div>
+                            <div className="space-y-0.5">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</p>
+                                <p className="text-slate-700 dark:text-slate-200 text-sm font-medium">{format(new Date(evento.fecha), 'dd-MM-yyyy HH:mm')}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             );
         } else if (tipo === 'emergencia') {
             return (
-                <>
-                    <p><strong>Clave:</strong> {evento.clave}</p>
-                    <p><strong>Unidades:</strong> {evento.unidades}</p>
-                    <p><strong>Fecha:</strong> {format(new Date(evento.fecha), 'dd-MM-yyyy HH:mm')}</p>
-                </>
-            );
-        } else if (tipo === 'Licencia Extendida') {
-            return (
-                <>
-                    <p><strong>Nombre:</strong> {evento.nombre}</p>
-                    <p><strong>Descripción:</strong> {evento.descripcion || '-'}</p>
-                    <p><strong>Lugar:</strong> {evento.lugar}</p>
-                    <p><strong>Tenida:</strong> {evento.tenida}</p>
-                    <p><strong>Fecha:</strong> {format(new Date(evento.fecha), 'dd-MM-yyyy HH:mm')}</p>
-                    {evento.autor && (
-                        <p><strong>Autor:</strong> {`${evento.autor.first_name} ${evento.autor.last_name}`}</p>
-                    )}
-                </>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="flex items-start gap-3">
+                        <div className="mt-1 p-2 bg-red-50 dark:!bg-red-500/10 text-red-600 dark:text-red-500 rounded-lg"><Flame size={18} /></div>
+                        <div className="space-y-0.5">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Clave</p>
+                            <p className="text-red-600 dark:text-red-500 text-xl font-black">{evento.clave}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <div className="mt-1 p-2 bg-slate-100 dark:!bg-slate-800 rounded-lg text-slate-500"><Tag size={18} /></div>
+                        <div className="space-y-0.5">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unidades</p>
+                            <p className="text-slate-700 dark:text-slate-200 text-lg font-bold">{evento.unidades}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <div className="mt-1 p-2 bg-slate-100 dark:!bg-slate-800 rounded-lg text-slate-500"><Calendar size={18} /></div>
+                        <div className="space-y-0.5">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</p>
+                            <p className="text-slate-700 dark:text-slate-200 text-lg font-bold">{format(new Date(evento.fecha), 'dd-MM-yyyy HH:mm')}</p>
+                        </div>
+                    </div>
+                </div>
             );
         }
         return null;
@@ -60,77 +109,139 @@ const DetalleListaAsistencia = () => {
         return tipo;
     };
 
+    const isEmergencia = tipo === 'emergencia';
+
     return (
         <Layout>
-            <div className="container bg-white rounded shadow-sm p-4 mt-4">
-                <h2>Detalle Lista de Asistencia #{id}</h2>
-
-                <div className="card mb-4">
-                    <div className="card-body">
-                        <h5 className="card-title">{getTipoLabel()}</h5>
-                        {renderEventoDetalle()}
-                        <p><strong>Fecha de creación:</strong> {format(new Date(fecha_creacion), 'dd-MM-yyyy HH:mm')}</p>
+            <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-12">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 !bg-white dark:!bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:!bg-slate-800 text-slate-500 flex items-center justify-center font-mono font-bold">
+                            #{id}
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800 dark:text-white leading-tight">Detalle de Lista</h2>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${
+                                    isEmergencia ? 'bg-red-50 text-red-600 dark:!bg-red-500/10' : 'bg-blue-50 text-blue-600 dark:!bg-blue-500/10'
+                                }`}>
+                                    {getTipoLabel()}
+                                </span>
+                                <span className="text-slate-400 dark:text-slate-500 text-xs flex items-center gap-1 italic">
+                                    <Clock size={12} /> Creada el {format(new Date(fecha_creacion), 'dd/MM/yyyy HH:mm')}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-md-6">
-                        <h5 className="mb-2">Asistentes</h5>
-                        {asistencias?.length > 0 ? (
-                            <ul className="list-group">
-                                {asistencias.map((a) => (
-                                    <li key={a.bombero_id} className="list-group-item">
-                                        {`${a.first_name} ${a.last_name}`}
-                                        {a.hora_llegada && ` — Llegó: ${format(new Date(a.hora_llegada), 'HH:mm')}`}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-muted">No hay asistentes registrados</p>
-                        )}
+                <div className="!bg-white dark:!bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-8 flex items-center gap-2">
+                        <Info size={20} className="text-red-600" />
+                        <span>Información del Evento</span>
+                    </h3>
+                    {renderEventoDetalle()}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="!bg-white dark:!bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+                        <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex items-center gap-3">
+                            <div className="p-2 bg-emerald-50 dark:!bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 rounded-xl">
+                                <UserCheck size={20} />
+                            </div>
+                            <h5 className="font-bold text-slate-800 dark:text-white uppercase tracking-tight">Asistentes</h5>
+                            <span className="ml-auto bg-emerald-50 dark:!bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-xs font-black px-2 py-1 rounded-lg">
+                                {asistencias?.length || 0}
+                            </span>
+                        </div>
+                        <div className="flex-1 p-2">
+                            {asistencias?.length > 0 ? (
+                                <div className="space-y-1">
+                                    {asistencias.map((a) => (
+                                        <div key={a.bombero_id} className="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                                            <span className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
+                                                {`${a.first_name} ${a.last_name}`}
+                                            </span>
+                                            {a.hora_llegada && (
+                                                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:!bg-slate-800 px-2 py-1 rounded-lg">
+                                                    Llegó {format(new Date(a.hora_llegada), 'HH:mm')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="py-12 text-center text-slate-400 italic">No hay asistentes registrados</div>
+                            )}
+                        </div>
                     </div>
 
                     {tipo === 'citacion' && (
-                        <div className="col-md-6">
-                            <h5 className="mb-2">Licencias</h5>
-                            {licencias?.length > 0 ? (
-                                <ul className="list-group">
-                                    {licencias.map((l, i) => (
-                                        <li key={i} className="list-group-item">
-                                            {`${l.first_name} ${l.last_name}`} — {l.motivo}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-muted">No hay licencias registradas</p>
-                            )}
+                        <div className="!bg-white dark:!bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+                            <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex items-center gap-3">
+                                <div className="p-2 bg-blue-50 dark:!bg-blue-500/10 text-blue-600 dark:text-blue-500 rounded-xl">
+                                    <ClipboardList size={20} />
+                                </div>
+                                <h5 className="font-bold text-slate-800 dark:text-white uppercase tracking-tight">Licencias</h5>
+                                <span className="ml-auto bg-blue-50 dark:!bg-blue-500/10 text-blue-600 dark:text-blue-500 text-xs font-black px-2 py-1 rounded-lg">
+                                    {licencias?.length || 0}
+                                </span>
+                            </div>
+                            <div className="flex-1 p-2">
+                                {licencias?.length > 0 ? (
+                                    <div className="space-y-1">
+                                        {licencias.map((l, i) => (
+                                            <div key={i} className="flex flex-col p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                <span className="font-semibold text-slate-700 dark:text-slate-200">{`${l.first_name} ${l.last_name}`}</span>
+                                                <span className="text-xs text-slate-400 italic mt-0.5">{l.motivo}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="py-12 text-center text-slate-400 italic">No hay licencias registradas</div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
 
                 {excepciones && total_excepciones > 0 && (
-                    <div className="mt-4">
-                        <h5 className="mb-2">Excepciones ({total_excepciones})</h5>
-                        {Object.entries(excepciones).map(([tipoExcepcion, bomberos]) => (
-                            <div key={tipoExcepcion} className="mb-3">
-                                <h6 className="text-muted">{tipoExcepcion}</h6>
-                                <ul className="list-group">
-                                    {bomberos.map((b) => (
-                                        <li key={b.bombero_id} className="list-group-item">
-                                            <div>
-                                                <strong>{`${b.first_name} ${b.last_name}`}</strong>
-                                            </div>
-                                            <div className="text-muted small">
-                                                {b.motivo}
-                                            </div>
-                                            <div className="text-muted small">
-                                                {format(new Date(b.fecha_inicio), 'dd-MM-yyyy')} — {format(new Date(b.fecha_fin), 'dd-MM-yyyy')}
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                    <div className="!bg-white dark:!bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex items-center gap-3">
+                            <div className="p-2 bg-amber-50 dark:!bg-amber-500/10 text-amber-600 dark:text-amber-500 rounded-xl">
+                                <AlertCircle size={20} />
                             </div>
-                        ))}
+                            <h5 className="font-bold text-slate-800 dark:text-white uppercase tracking-tight">Excepciones</h5>
+                            <span className="ml-auto bg-amber-50 dark:!bg-amber-500/10 text-amber-600 dark:text-amber-500 text-xs font-black px-2 py-1 rounded-lg">
+                                {total_excepciones}
+                            </span>
+                        </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {Object.entries(excepciones).map(([tipoExcepcion, bomberos]) => (
+                                    <div key={tipoExcepcion} className="space-y-4">
+                                        <h6 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">{tipoExcepcion}</h6>
+                                        <div className="space-y-2">
+                                            {bomberos.map((b) => (
+                                                <div key={b.bombero_id} className="p-4 rounded-2xl bg-slate-50 dark:!bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                                                    <div className="font-bold text-slate-700 dark:text-slate-200">
+                                                        {`${b.first_name} ${b.last_name}`}
+                                                    </div>
+                                                    <div className="text-xs text-red-600 dark:text-red-500 font-medium mt-1">
+                                                        {b.motivo}
+                                                    </div>
+                                                    <div className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1 uppercase tracking-wider">
+                                                        <Calendar size={10} />
+                                                        {format(new Date(b.fecha_inicio), 'dd/MM/yyyy')} — {format(new Date(b.fecha_fin), 'dd/MM/yyyy')}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

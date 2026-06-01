@@ -37,7 +37,7 @@ const CrearCitacion = () => {
     return (
         <Layout>
 
-            <div className="container bg-white p-4 rounded shadow-sm">
+            <div className="container p-4 rounded shadow-sm">
                 <h2 className="mb-4">Crear Citación</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="row g-3">
                     <div className="col-md-6">
@@ -75,8 +75,7 @@ const CrearCitacion = () => {
                                 {filtrados.map((perfil) => (
                                     <li
                                         key={perfil.id}
-                                        className={`list-group-item list-group-item-action ${autorSeleccionado === perfil.id ? 'active' : ''
-                                            }`}
+                                        className={`list-group-item list-group-item-action ${autorSeleccionado === perfil.id ? 'active' : '' }`}
                                         onClick={() => {
                                             setValue('autor', perfil.id);
                                             setSearch(perfil.user.email); // muestra como seleccionado

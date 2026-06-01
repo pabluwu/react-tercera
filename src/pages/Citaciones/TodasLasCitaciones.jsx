@@ -189,9 +189,7 @@ const TodasLasCitaciones = () => {
                     <div className="card-body d-flex flex-column">
                       <h6 className="fw-bold mb-1">{citacion.nombre}</h6>
                       <span
-                        className={`badge mb-2 ${
-                          disponibleParaLicencia ? 'bg-success' : 'bg-warning text-dark'
-                        }`}
+                        className={`badge mb-2 ${ disponibleParaLicencia ? 'bg-success' : 'bg-warning text-dark' }`}
                       >
                         {disponibleParaLicencia
                           ? 'Disponible para licencia'

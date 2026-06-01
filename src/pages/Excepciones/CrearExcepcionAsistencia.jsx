@@ -103,7 +103,7 @@ const CrearExcepcionAsistencia = () => {
 
     return (
         <Layout>
-            <div className="container-fluid bg-white p-3 p-md-4 rounded shadow-sm">
+            <div className="container-fluid p-3 p-md-4 rounded shadow-sm">
                 <h2 className="mb-4">Crear Excepción de Asistencia</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="row g-3">
                     <div className="col-12 col-md-6">
@@ -158,8 +158,7 @@ const CrearExcepcionAsistencia = () => {
                                 {filtrados.map((bombero) => (
                                     <li
                                         key={bombero.id}
-                                        className={`list-group-item list-group-item-action ${bomberoSeleccionado === bombero.user.id ? 'active' : ''
-                                            }`}
+                                        className={`list-group-item list-group-item-action ${bomberoSeleccionado === bombero.user.id ? 'active' : '' }`}
                                         onClick={() => {
                                             setValue('usuario', bombero.user.id);
                                             setSearch(`${bombero.user.first_name} ${bombero.user.last_name}`);

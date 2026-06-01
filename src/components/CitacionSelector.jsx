@@ -1,14 +1,26 @@
+import { CalendarDays } from 'lucide-react';
+
 const CitacionSelector = ({ citaciones, register }) => (
-    <div className="col-md-6">
-        <label className="form-label">Citación</label>
-        <select {...register('citacion_id')} className="form-select">
-            <option value="">Seleccione una citación</option>
-            {(citaciones || []).map((c) => (
-                <option key={c.id} value={c.id}>
-                    {c.nombre} - {new Date(c.fecha).toLocaleString()}
-                </option>
-            ))}
-        </select>
+    <div className="space-y-2">
+        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
+            <CalendarDays size={16} /> Citación Correspondiente
+        </label>
+        <div className="relative group">
+            <select 
+                {...register('citacion_id')} 
+                className="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200 dark:!bg-slate-800 dark:text-white appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.75rem_center] bg-no-repeat"
+            >
+                <option value="">Seleccione una citación</option>
+                {(citaciones || []).map((c) => (
+                    <option key={c.id} value={c.id}>
+                        {c.nombre} — {new Date(c.fecha).toLocaleDateString()} {new Date(c.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </option>
+                ))}
+            </select>
+        </div>
+        <p className="text-[10px] text-slate-400 dark:text-slate-500 ml-1 uppercase font-bold tracking-widest">
+            Selecciona el evento para el cual se registran las asistencias
+        </p>
     </div>
 );
 

@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { loginUser } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, Flame } from 'lucide-react';
 import { useState } from 'react';
 
 const Login = () => {
@@ -24,51 +24,76 @@ const Login = () => {
   const onSubmit = (data) => mutation.mutate(data);
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="bg-white p-4 p-md-5 rounded-4 shadow-sm" style={{ maxWidth: 400, width: '100%' }}>
-        <div className="text-center mb-4">
-          <div className="bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center"
-               style={{ width: 48, height: 48, fontSize: 20, fontWeight: 'bold' }}>
-            3
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:!bg-slate-950 p-6">
+      <div className="w-full max-w-md !bg-white dark:!bg-slate-900 p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/60 dark:shadow-none border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+        {/* Decorative background element */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-red-600/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-red-600/5 rounded-full blur-3xl"></div>
+
+        <div className="text-center mb-10 relative">
+          <div className="bg-red-600 text-white rounded-2xl w-14 h-14 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-red-600/30">
+            <Flame size={32} />
           </div>
-          <h4 className="mt-3 mb-1">Tercera</h4>
-          <p className="text-muted mb-0">Inicia sesión en tu cuenta</p>
+          <h1 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight mb-2">Tercera Compañía</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Gestión de Personal y Asistencia</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-3">
-            <label className="form-label">RUT</label>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 relative">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
+              <User size={16} /> RUT
+            </label>
             <input
               {...register('rut')}
-              className="form-control"
+              className="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:!bg-slate-950 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 outline-none"
               placeholder="12345678-9"
               required
             />
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Contraseña</label>
-            <div className="input-group">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
+              <Lock size={16} /> Contraseña
+            </label>
+            <div className="relative group">
               <input
                 {...register('password')}
                 type={showPassword ? 'text' : 'password'}
-                className="form-control"
-                placeholder="Tu contraseña"
+                className="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:!bg-slate-950 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 outline-none"
+                placeholder="••••••••"
                 required
               />
-              <span className="input-group-text bg-white cursor-pointer" onClick={() => setShowPassword(!showPassword)} style={{ cursor: 'pointer' }}>
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </span>
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary w-100 mt-2" disabled={mutation.isPending}>
-            {mutation.isPending ? 'Ingresando...' : 'Iniciar sesión'}
+          <button
+            type="submit"
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-red-600/20 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed mt-4"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                Iniciando sesión...
+              </span>
+            ) : 'Ingresar al Portal'}
           </button>
         </form>
 
-        <div className="text-center mt-4">
-          <a href="/password-reset" className="text-primary small">¿Olvidaste tu contraseña?</a>
+        <div className="text-center mt-10">
+          <a
+            href="/password-reset"
+            className="text-sm font-bold text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 transition-colors"
+          >
+            ¿Olvidaste tu contraseña?
+          </a>
         </div>
       </div>
     </div>

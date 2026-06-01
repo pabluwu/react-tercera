@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Card, FileText } from 'lucide-react';
+import { FileText, ChevronRight, Loader2, Files } from 'lucide-react';
 import { useTiposPermitidos } from '../../hooks/useTiposPermitidos';
 import Layout from '../../layout/Layout';
 
@@ -13,27 +13,50 @@ const SeleccionarTipoArchivo = () => {
 
     return (
         <Layout>
-
-            <div className="container mt-4">
-                <h2 className="mb-4">Tipos de Documentos</h2>
+            <div className="max-w-6xl mx-auto px-4 py-8">
+                <div className="flex items-center gap-4 mb-10">
+                    <div className="p-3 bg-blue-50 dark:!bg-blue-900/30 rounded-2xl text-blue-600 dark:text-blue-400">
+                        <Files size={32} />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Documentos</h2>
+                        <p className="text-slate-500 dark:text-slate-400">Selecciona una categoría para ver los archivos disponibles</p>
+                    </div>
+                </div>
 
                 {isLoading ? (
-                    <div>Cargando tipos disponibles...</div>
+                    <div className="flex flex-col items-center justify-center py-20 gap-4">
+                        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">Cargando categorías...</p>
+                    </div>
                 ) : (
-                    <div className="row">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {tipos?.map((tipo) => (
-                            <div className="col-md-4 mb-4" key={tipo.value}>
-                                <div
-                                    className="card h-100 shadow-sm cursor-pointer"
-                                    onClick={() => handleClick(tipo.value)}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    <div className="card-body d-flex align-items-center">
-                                        <FileText className="me-3 text-primary" />
-                                        <h5 className="card-title mb-0">{tipo.label}</h5>
+                            <button
+                                key={tipo.value}
+                                onClick={() => handleClick(tipo.value)}
+                                className="group relative !bg-white dark:!bg-slate-900 p-8 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 text-left transition-all duration-300 hover:shadow-2xl hover:shadow-blue-200/50 hover:-translate-y-1 overflow-hidden"
+                            >
+                                {/* Decorative background element */}
+                                <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 dark:!bg-blue-900/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500 ease-out" />
+                                
+                                <div className="relative flex items-center justify-between">
+                                    <div className="flex items-center gap-5">
+                                        <div className="p-4 bg-slate-50 dark:!bg-slate-800 rounded-2xl text-slate-600 dark:text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                                            <FileText size={28} />
+                                        </div>
+                                        <div>
+                                            <h5 className="text-xl font-bold text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                {tipo.label}
+                                            </h5>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                                                Ver documentos de esta categoría
+                                            </p>
+                                        </div>
                                     </div>
+                                    <ChevronRight className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" size={24} />
                                 </div>
-                            </div>
+                            </button>
                         ))}
                     </div>
                 )}

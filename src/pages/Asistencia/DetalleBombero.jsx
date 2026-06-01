@@ -11,14 +11,15 @@ import {
 } from "chart.js";
 import Layout from "../../layout/Layout";
 import { fetchWithToken } from "../../api/fetchWithToken";
+import { ArrowLeft, RefreshCw, User, Mail, Hash, Calendar, PieChart, Activity, AlertCircle } from "lucide-react";
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartTitle);
 
 const buildChartData = (asistencias = 0, licencias = 0, inasistencias = 0) => {
   const segments = [
-    { label: "Asistencias", value: asistencias, color: "#198754" },
-    { label: "Licencias", value: licencias, color: "#0d6efd" },
-    { label: "Inasistencias", value: inasistencias, color: "#dc3545" },
+    { label: "Asistencias", value: asistencias, color: "#ef4444" }, // red-500
+    { label: "Licencias", value: licencias, color: "#3b82f6" }, // blue-500
+    { label: "Inasistencias", value: inasistencias, color: "#94a3b8" }, // slate-400
   ];
 
   const total = segments.reduce((sum, segment) => sum + segment.value, 0);
@@ -32,8 +33,8 @@ const buildChartData = (asistencias = 0, licencias = 0, inasistencias = 0) => {
             {
               data: segments.map((segment) => segment.value),
               backgroundColor: segments.map((segment) => segment.color),
-              borderColor: "#fff",
-              borderWidth: 2,
+              borderColor: "transparent",
+              borderWidth: 0,
             },
           ],
         };
@@ -72,104 +73,125 @@ const DetalleBombero = () => {
 
   return (
     <Layout>
-      <div className="container rounded shadow-sm bg-white p-4">
-        <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
-          <div>
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 !bg-white dark:!bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+          <div className="space-y-4">
             <Link
               to="/asistencia/bomberos"
-              className="btn btn-link px-0 text-decoration-none mb-2"
+              className="group flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition-colors font-medium text-sm"
             >
-              ← Volver al listado de bomberos
+              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+              <span>Volver al listado</span>
             </Link>
-            <h2 className="mb-1">Asistencia por bombero</h2>
-            <p className="text-muted mb-0">
-              Desempeño anual de asistencia para el bombero seleccionado
-            </p>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Asistencia por bombero</h2>
+              <p className="text-slate-500 dark:text-slate-400 mt-1">
+                Desempeño anual y estadísticas de participación
+              </p>
+            </div>
           </div>
-          <div className="d-flex gap-2">
-            <div className="btn-group btn-group-sm" role="group" aria-label="Seleccionar año">
-              <button type="button" className="btn btn-outline-secondary" onClick={handlePrevYear}>
+          
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <div className="flex bg-slate-100 dark:!bg-slate-800 p-1 rounded-2xl">
+              <button 
+                className="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                onClick={handlePrevYear}
+              >
                 {year - 1}
               </button>
               <button
-                type="button"
-                className={`btn btn-outline-primary ${year === currentYear ? "active text-white" : ""}`}
+                className={`px-6 py-2 rounded-xl text-sm font-bold shadow-sm transition-all ${year === currentYear ? "bg-red-600 text-white" : "!bg-white dark:!bg-slate-700 text-slate-900 dark:text-white"}`}
                 onClick={handleCurrentYear}
               >
                 {currentYear}
               </button>
-              <button type="button" className="btn btn-outline-secondary" onClick={handleNextYear}>
+              <button 
+                className="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                onClick={handleNextYear}
+              >
                 {year + 1}
               </button>
             </div>
+            
             <button
               type="button"
-              className="btn btn-outline-secondary btn-sm"
+              className="flex items-center justify-center p-2 !bg-white dark:!bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-600 dark:text-slate-400 hover:border-red-500 hover:text-red-600 transition-all shadow-sm"
               onClick={() => refetch()}
               disabled={isLoading || isFetching}
+              title="Actualizar"
             >
-              {isFetching ? "Actualizando..." : "Actualizar"}
+              <RefreshCw size={20} className={isFetching ? "animate-spin" : ""} />
             </button>
           </div>
         </div>
 
         {isLoading ? (
-          <div>Cargando asistencia del bombero...</div>
+          <div className="flex items-center justify-center py-20 text-slate-400">
+            <RefreshCw size={24} className="animate-spin mr-3" />
+            <span>Cargando información detallada...</span>
+          </div>
         ) : isError ? (
-          <div className="alert alert-danger" role="alert">
-            {error?.message || "No se pudo obtener la asistencia del bombero."}
+          <div className="p-8 bg-red-50 dark:!bg-red-500/10 text-red-600 dark:text-red-500 rounded-3xl border border-red-100 dark:border-red-500/20 shadow-sm flex items-center gap-4">
+            <AlertCircle size={24} />
+            <span className="font-medium">{error?.message || "No se pudo obtener la asistencia del bombero."}</span>
           </div>
         ) : !data ? (
-          <div className="alert alert-info" role="alert">
-            No se encontró información para el bombero indicado.
+          <div className="p-12 bg-slate-50 dark:!bg-slate-900 rounded-3xl text-center">
+            <p className="text-slate-500 dark:text-slate-400 italic">No se encontró información para el bombero indicado.</p>
           </div>
         ) : (
-          <>
-            {isFetching && (
-              <div className="alert alert-info py-2">Actualizando información...</div>
-            )}
-
-            <div className="border rounded p-3 mb-4">
-              <h5 className="mb-2">Datos del bombero</h5>
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 small text-muted">
-                <div className="col">
-                  <div>
-                    <strong>ID:</strong> {data.usuario?.id ?? "—"}
-                  </div>
+          <div className="space-y-8">
+            <div className="!bg-white dark:!bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+              <h5 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+                <User size={20} className="text-red-600" />
+                <span>Perfil del Bombero</span>
+              </h5>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <Hash size={12} /> ID de Usuario
+                  </p>
+                  <p className="text-slate-700 dark:text-slate-200 font-mono">{data.usuario?.id ?? "—"}</p>
                 </div>
-                <div className="col">
-                  <div>
-                    <strong>Nombre:</strong> {`${data.usuario?.first_name || ""} ${data.usuario?.last_name || ""}`.trim() || "—"}
-                  </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <User size={12} /> Nombre Completo
+                  </p>
+                  <p className="text-slate-700 dark:text-slate-200 font-semibold">{`${data.usuario?.first_name || ""} ${data.usuario?.last_name || ""}`.trim() || "—"}</p>
                 </div>
-                <div className="col">
-                  <div>
-                    <strong>Correo:</strong> {data.usuario?.email || "—"}
-                  </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <Mail size={12} /> Correo Electrónico
+                  </p>
+                  <p className="text-slate-700 dark:text-slate-200">{data.usuario?.email || "—"}</p>
                 </div>
               </div>
             </div>
 
-            <div className="row g-4 mb-4 align-items-center">
-              <div className="col-md-5 d-flex justify-content-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="lg:col-span-5 !bg-white dark:!bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center">
+                <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-8 self-start flex items-center gap-2">
+                  <PieChart size={20} className="text-red-600" />
+                  <span>Distribución Anual {year}</span>
+                </h4>
                 {resumen.chartData ? (
-                  <div style={{ width: 260, height: 260 }}>
+                  <div className="relative w-full aspect-square max-w-[260px]">
                     <Pie
                       data={resumen.chartData}
                       options={{
                         responsive: true,
-                        maintainAspectRatio: false,
+                        maintainAspectRatio: true,
                         plugins: {
                           legend: { display: false },
                           tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            cornerRadius: 12,
                             callbacks: {
                               label: (context) => {
                                 const value = context.raw ?? 0;
-                                const pct =
-                                  resumen.total > 0
-                                    ? ` (${Math.round((value / resumen.total) * 100)}%)`
-                                    : "";
-                                return `${context.label}: ${value}${pct}`;
+                                const pct = resumen.total > 0 ? ` (${Math.round((value / resumen.total) * 100)}%)` : "";
+                                return ` ${context.label}: ${value}${pct}`;
                               },
                             },
                           },
@@ -178,75 +200,55 @@ const DetalleBombero = () => {
                     />
                   </div>
                 ) : (
-                  <div
-                    className="border rounded d-flex flex-column align-items-center justify-content-center text-muted"
-                    style={{ width: 220, height: 220, borderColor: "#dee2e6" }}
-                  >
-                    <div className="fw-bold h4 mb-0">0</div>
-                    <small>Sin registros para este año</small>
+                  <div className="flex flex-col items-center justify-center py-12 text-slate-300">
+                    <PieChart size={48} className="mb-4 opacity-20" />
+                    <p className="text-sm font-medium">Sin registros este año</p>
                   </div>
                 )}
               </div>
 
-              <div className="col-md-7">
-                <div className="row g-3">
+              <div className="lg:col-span-7 space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {resumen.segments.map((segment) => (
-                    <div key={segment.label} className="col-sm-6">
-                      <div className="border rounded p-3 h-100">
-                        <div className="d-flex align-items-center gap-2 mb-2">
-                          <span
-                            className="rounded-circle d-inline-block"
-                            style={{ width: 12, height: 12, backgroundColor: segment.color }}
-                          />
-                          <strong>{segment.label}</strong>
-                        </div>
-                        <div className="h3 fw-bold mb-0">{segment.value}</div>
+                    <div key={segment.label} className="!bg-white dark:!bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: segment.color }}></div>
+                        <span className="font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider text-xs">{segment.label}</span>
                       </div>
+                      <div className="text-3xl font-black text-slate-800 dark:text-white">{segment.value}</div>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
 
-            <div className="row g-4">
-              <div className="col-sm-6 col-lg-3">
-                <div className="border rounded p-3 text-center">
-                  <strong className="d-block text-muted">Citaciones</strong>
-                  <span className="display-6 fw-bold">{data.total_citaciones ?? 0}</span>
-                </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="border rounded p-3 text-center">
-                  <strong className="d-block text-muted">Emergencias</strong>
-                  <span className="display-6 fw-bold">{data.total_emergencias ?? 0}</span>
-                </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="border rounded p-3 text-center">
-                  <strong className="d-block text-muted">Listas creadas</strong>
-                  <span className="display-6 fw-bold">{data.total_listas ?? 0}</span>
-                </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="border rounded p-3 text-center">
-                  <strong className="d-block text-muted">Año</strong>
-                  <span className="display-6 fw-bold">{data.anio ?? year}</span>
-                </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="border rounded p-3 text-center">
-                  <strong className="d-block text-muted">Suspendidos</strong>
-                  <span className="display-6 fw-bold">{data.suspendidos ?? 0}</span>
-                </div>
-              </div>
-              <div className="col-sm-6 col-lg-3">
-                <div className="border rounded p-3 text-center">
-                  <strong className="d-block text-muted">Separados</strong>
-                  <span className="display-6 fw-bold">{data.separados ?? 0}</span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div className="!bg-white dark:!bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Citaciones</p>
+                    <p className="text-2xl font-black text-slate-800 dark:text-white">{data.total_citaciones ?? 0}</p>
+                  </div>
+                  <div className="!bg-white dark:!bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Emergencias</p>
+                    <p className="text-2xl font-black text-slate-800 dark:text-white">{data.total_emergencias ?? 0}</p>
+                  </div>
+                  <div className="!bg-white dark:!bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Listas</p>
+                    <p className="text-2xl font-black text-slate-800 dark:text-white">{data.total_listas ?? 0}</p>
+                  </div>
+                  <div className="!bg-white dark:!bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Suspendidos</p>
+                    <p className="text-2xl font-black text-slate-800 dark:text-white">{data.suspendidos ?? 0}</p>
+                  </div>
+                  <div className="!bg-white dark:!bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-center">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Separados</p>
+                    <p className="text-2xl font-black text-slate-800 dark:text-white">{data.separados ?? 0}</p>
+                  </div>
+                  <div className="!bg-white dark:!bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm text-center bg-red-50/50 dark:!bg-red-500/5">
+                    <p className="text-xs font-bold text-red-600 dark:text-red-500 uppercase tracking-wider mb-1">Año</p>
+                    <p className="text-2xl font-black text-red-600 dark:text-red-500">{data.anio ?? year}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </Layout>

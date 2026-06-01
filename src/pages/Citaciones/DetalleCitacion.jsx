@@ -61,7 +61,7 @@ const DetalleCitacion = () => {
 
   return (
     <Layout>
-      <div className="container rounded shadow-sm bg-white p-4">
+      <div className="container rounded shadow-sm p-4">
         <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
           <div>
             <Link to="/citaciones/todas" className="btn btn-link px-0 text-decoration-none mb-2">

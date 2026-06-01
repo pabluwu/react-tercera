@@ -5,6 +5,7 @@ import Layout from "../../layout/Layout";
 import Tabla from "../../components/Tabla";
 import { fetchWithToken } from "../../api/fetchWithToken";
 import useAuthStore from "../../store/useAuthStore";
+import { UserCheck, Calendar, AlertCircle, Info, ChevronLeft } from "lucide-react";
 
 const MONTH_NAMES = [
   "Enero",
@@ -131,9 +132,12 @@ const RevisarCuotaDetalleBombero = () => {
         header: "Estado",
         cell: (info) => {
           const pagado = info.row.original.pagado;
-          const className = pagado ? "bg-success" : "bg-warning text-dark";
           return (
-            <span className={`badge ${className}`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+              pagado 
+                ? "bg-green-100 text-green-700 dark:!bg-green-900/30 dark:text-green-400" 
+                : "bg-amber-100 text-amber-700 dark:!bg-amber-900/30 dark:text-amber-400"
+            }`}>
               {pagado ? "Pagado" : "Pendiente"}
             </span>
           );
@@ -158,32 +162,57 @@ const RevisarCuotaDetalleBombero = () => {
 
   return (
     <Layout>
-      <div className="container rounded shadow-sm bg-white p-4">
-        <h2 className="mb-4">Detalle de cuotas del bombero</h2>
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-red-50 dark:!bg-red-900/20 rounded-2xl text-red-600 dark:text-red-400">
+              <UserCheck size={28} />
+            </div>
+            <div>
+              <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Detalle de Cuotas</h2>
+              <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Bombero ID: {targetBomberoId}</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 px-4 py-2 !bg-white dark:!bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+          >
+            <ChevronLeft size={20} /> Volver
+          </button>
+        </div>
 
         {!targetBomberoId && (
-          <div className="alert alert-danger">
-            No se proporcionó un identificador de bombero.
+          <div className="flex items-center gap-4 p-5 bg-red-50 dark:!bg-red-900/20 text-red-700 dark:text-red-400 rounded-3xl border border-red-100 dark:border-red-900/30 mb-8">
+            <AlertCircle className="shrink-0" size={24} />
+            <p className="font-bold">No se proporcionó un identificador de bombero.</p>
           </div>
         )}
 
-        {isLoading && <div>Cargando información de cuotas...</div>}
+        {isLoading && (
+          <div className="!bg-white dark:!bg-slate-800 rounded-[2.5rem] shadow-xl p-16 text-center border border-slate-100 dark:border-slate-700">
+             <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-red-600 border-t-transparent mb-4"></div>
+             <p className="text-slate-500 dark:text-slate-400 font-bold">Cargando información...</p>
+          </div>
+        )}
 
         {hasError && (
-          <div className="alert alert-danger" role="alert">
-            {errorMessage}
+          <div className="flex items-center gap-4 p-5 bg-red-50 dark:!bg-red-900/20 text-red-700 dark:text-red-400 rounded-3xl border border-red-100 dark:border-red-900/30 mb-8">
+            <AlertCircle className="shrink-0" size={24} />
+            <p className="font-bold">{errorMessage}</p>
           </div>
         )}
 
         {!isLoading && !hasError && years.length > 0 && (
-          <>
-            <div className="btn-group mb-3" role="group" aria-label="Seleccionar año">
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-100 dark:!bg-slate-900 w-fit rounded-2xl border border-slate-200 dark:border-slate-800">
               {years.map((year) => (
                 <button
                   key={year}
                   type="button"
-                  className={`btn btn-sm ${
-                    year === selectedYear ? "btn-primary" : "btn-outline-primary"
+                  className={`px-6 py-2.5 rounded-xl text-sm font-black transition-all duration-200 ${
+                    year === selectedYear 
+                      ? "!bg-white dark:!bg-slate-800 text-red-600 shadow-sm dark:text-white" 
+                      : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
                   }`}
                   onClick={() => setSelectedYear(year)}
                 >
@@ -192,13 +221,19 @@ const RevisarCuotaDetalleBombero = () => {
               ))}
             </div>
 
-            <Tabla data={datosTabla} columns={columns} pageSize={12} />
-          </>
+            <div className="!bg-white dark:!bg-slate-800 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
+               <div className="p-1">
+                  <Tabla data={datosTabla} columns={columns} pageSize={12} />
+               </div>
+            </div>
+          </div>
         )}
 
         {!isLoading && !hasError && years.length === 0 && (
-          <div className="alert alert-info">
-            No hay registros de meses para mostrar.
+          <div className="flex flex-col items-center justify-center p-16 !bg-white dark:!bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 text-center">
+            <Info className="text-slate-300 dark:text-slate-600 mb-4" size={64} />
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Sin registros</h3>
+            <p className="text-slate-500 dark:text-slate-400">No hay registros de meses para mostrar.</p>
           </div>
         )}
       </div>

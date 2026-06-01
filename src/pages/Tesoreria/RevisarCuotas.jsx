@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../../layout/Layout";
 import Tabla from "../../components/Tabla";
 import { useResumenCuotas } from "../../hooks/useResumenCuotas";
+import { Users, Search, AlertTriangle, CheckCircle2, Eye } from "lucide-react";
 
 const getFirstValue = (source, keys) => {
     if (!source) return undefined;
@@ -104,6 +105,7 @@ const RevisarCuotas = () => {
             {
                 accessorKey: "nombre",
                 header: "Nombre",
+                cell: (info) => <span className="font-bold text-slate-700 dark:text-slate-200">{info.getValue()}</span>
             },
             {
                 accessorKey: "rut",
@@ -111,32 +113,36 @@ const RevisarCuotas = () => {
             },
             {
                 accessorKey: "totalPagadas",
-                header: "Total Pagadas",
-                cell: (info) => formatNumeric(info.getValue()),
+                header: "Pagadas",
+                cell: (info) => (
+                    <span className="font-black text-green-600 dark:text-green-400">
+                        {formatNumeric(info.getValue())}
+                    </span>
+                ),
             },
             {
                 accessorKey: "totalPendientes",
-                header: "Total Pendientes",
-                cell: (info) => formatNumeric(info.getValue()),
+                header: "Pendientes",
+                cell: (info) => (
+                    <span className="font-black text-amber-600 dark:text-amber-400">
+                        {formatNumeric(info.getValue())}
+                    </span>
+                ),
             },
             {
                 accessorKey: "isMoroso",
-                header: "Pasar a consejo",
+                header: "Estado",
                 cell: (info) => {
                     const moroso = isTruthLike(info.getValue());
-                    const color = moroso ? "#dc3545" : "#198754";
                     return (
-                        <span
-                            aria-label={moroso ? "Moroso" : "Al día"}
-                            title={moroso ? "Moroso" : "Al día"}
-                            style={{
-                                display: "inline-block",
-                                width: "12px",
-                                height: "12px",
-                                borderRadius: "50%",
-                                backgroundColor: color,
-                            }}
-                        />
+                        <div className="flex items-center gap-2">
+                            <span
+                                className={`w-3 h-3 rounded-full ${moroso ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" : "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"}`}
+                            />
+                            <span className={`text-xs font-black uppercase tracking-wider ${moroso ? "text-red-600" : "text-green-600"}`}>
+                                {moroso ? "Consejo" : "Al día"}
+                            </span>
+                        </div>
                     );
                 },
             },
@@ -146,10 +152,11 @@ const RevisarCuotas = () => {
                 cell: (info) => (
                     <button
                         type="button"
-                        className="btn btn-outline-primary btn-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:!bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group"
                         onClick={() => handleVerMas(info.row.original)}
                     >
-                        Ver más
+                        <Eye size={16} className="text-slate-400 group-hover:text-red-600 transition-colors" />
+                        Ver detalle
                     </button>
                 ),
             },
@@ -161,22 +168,48 @@ const RevisarCuotas = () => {
 
     return (
         <Layout>
-            <div className="container rounded shadow-sm bg-white p-4">
-                <h2 className="mb-4">Revisar cuotas bomberos</h2>
-                {isLoading && <div>Cargando resumen...</div>}
-                {isError && (
-                    <div className="alert alert-danger" role="alert">
-                        {error?.message || "Ocurrió un error al obtener el resumen."}
+            <div className="container mx-auto px-4 py-8 max-w-6xl">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-red-50 dark:!bg-red-900/20 rounded-2xl text-red-600 dark:text-red-400">
+                            <Users size={28} />
+                        </div>
+                        <div>
+                            <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">Revisar Cuotas</h2>
+                            <p className="text-slate-500 dark:text-slate-400 font-medium">Estado general de pagos de la compañía</p>
+                        </div>
                     </div>
-                )}
-                {!isLoading && !isError && shouldRenderTable && (
-                    <Tabla data={tableData} columns={columns} pageSize={20} />
-                )}
-                {!isLoading && !isError && !shouldRenderTable && (
-                    <div className="alert alert-info" role="alert">
-                        No hay información de cuotas para mostrar.
-                    </div>
-                )}
+                </div>
+
+                <div className="!bg-white dark:!bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden">
+                    {isLoading && (
+                        <div className="p-20 text-center">
+                            <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-red-600 border-t-transparent mb-4"></div>
+                            <p className="text-slate-500 dark:text-slate-400 font-bold tracking-tight">Cargando resumen de cuotas...</p>
+                        </div>
+                    )}
+
+                    {isError && (
+                        <div className="p-10">
+                            <div className="flex items-center gap-4 p-5 bg-red-50 dark:!bg-red-900/20 text-red-700 dark:text-red-400 rounded-3xl border border-red-100 dark:border-red-900/30">
+                                <AlertTriangle className="shrink-0" size={24} />
+                                <p className="font-bold">{error?.message || "Ocurrió un error al obtener el resumen."}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {!isLoading && !isError && shouldRenderTable && (
+                        <div className="p-1">
+                            <Tabla data={tableData} columns={columns} pageSize={20} />
+                        </div>
+                    )}
+
+                    {!isLoading && !isError && !shouldRenderTable && (
+                        <div className="p-20 text-center text-slate-400 dark:text-slate-600 font-medium">
+                            No hay información de cuotas para mostrar.
+                        </div>
+                    )}
+                </div>
             </div>
         </Layout>
     )
