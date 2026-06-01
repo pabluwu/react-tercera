@@ -18,8 +18,6 @@ const CrearListaAsistencia = () => {
         queryFn: () => fetchWithToken('/perfiles/')
     });
 
-    console.log(usuariosData);
-
     const { data: citacionesData } = useQuery({
         queryKey: ['citaciones'],
         queryFn: () => fetchWithToken('/citaciones/disponibles/')
@@ -46,7 +44,8 @@ const CrearListaAsistencia = () => {
                 body: JSON.stringify({
                     clave: form.clave,
                     fecha: form.fecha,
-                    unidades: form.unidades
+                    unidades: form.unidades,
+                    is_declarado: form.is_declarado
                 })
             });
             payload.content_type = 'emergencia';

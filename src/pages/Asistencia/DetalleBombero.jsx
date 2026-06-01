@@ -233,6 +233,18 @@ const DetalleBombero = () => {
                   <span className="display-6 fw-bold">{data.anio ?? year}</span>
                 </div>
               </div>
+              <div className="col-sm-6 col-lg-3">
+                <div className="border rounded p-3 text-center">
+                  <strong className="d-block text-muted">Suspendidos</strong>
+                  <span className="display-6 fw-bold">{data.suspendidos ?? 0}</span>
+                </div>
+              </div>
+              <div className="col-sm-6 col-lg-3">
+                <div className="border rounded p-3 text-center">
+                  <strong className="d-block text-muted">Separados</strong>
+                  <span className="display-6 fw-bold">{data.separados ?? 0}</span>
+                </div>
+              </div>
             </div>
           </>
         )}

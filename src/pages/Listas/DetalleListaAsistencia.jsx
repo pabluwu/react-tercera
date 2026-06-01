@@ -15,7 +15,7 @@ const DetalleListaAsistencia = () => {
     if (isLoading) return <div className="container mt-4">Cargando...</div>;
     if (error || !data) return <div className="container mt-4 text-danger">Error al cargar los datos</div>;
 
-    const { evento, tipo, fecha_creacion, asistencias, licencias } = data;
+    const { evento, tipo, fecha_creacion, asistencias, licencias, excepciones, total_excepciones } = data;
 
     const renderEventoDetalle = () => {
         if (tipo === 'citacion') {
@@ -36,8 +36,28 @@ const DetalleListaAsistencia = () => {
                     <p><strong>Fecha:</strong> {format(new Date(evento.fecha), 'dd-MM-yyyy HH:mm')}</p>
                 </>
             );
+        } else if (tipo === 'Licencia Extendida') {
+            return (
+                <>
+                    <p><strong>Nombre:</strong> {evento.nombre}</p>
+                    <p><strong>Descripción:</strong> {evento.descripcion || '-'}</p>
+                    <p><strong>Lugar:</strong> {evento.lugar}</p>
+                    <p><strong>Tenida:</strong> {evento.tenida}</p>
+                    <p><strong>Fecha:</strong> {format(new Date(evento.fecha), 'dd-MM-yyyy HH:mm')}</p>
+                    {evento.autor && (
+                        <p><strong>Autor:</strong> {`${evento.autor.first_name} ${evento.autor.last_name}`}</p>
+                    )}
+                </>
+            );
         }
         return null;
+    };
+
+    const getTipoLabel = () => {
+        if (tipo === 'citacion') return 'Citación';
+        if (tipo === 'emergencia') return 'Emergencia';
+        if (tipo === 'Licencia Extendida') return 'Licencia Extendida';
+        return tipo;
     };
 
     return (
@@ -47,7 +67,7 @@ const DetalleListaAsistencia = () => {
 
                 <div className="card mb-4">
                     <div className="card-body">
-                        <h5 className="card-title">{tipo === 'citacion' ? 'Citación' : 'Emergencia'}</h5>
+                        <h5 className="card-title">{getTipoLabel()}</h5>
                         {renderEventoDetalle()}
                         <p><strong>Fecha de creación:</strong> {format(new Date(fecha_creacion), 'dd-MM-yyyy HH:mm')}</p>
                     </div>
@@ -87,6 +107,32 @@ const DetalleListaAsistencia = () => {
                         </div>
                     )}
                 </div>
+
+                {excepciones && total_excepciones > 0 && (
+                    <div className="mt-4">
+                        <h5 className="mb-2">Excepciones ({total_excepciones})</h5>
+                        {Object.entries(excepciones).map(([tipoExcepcion, bomberos]) => (
+                            <div key={tipoExcepcion} className="mb-3">
+                                <h6 className="text-muted">{tipoExcepcion}</h6>
+                                <ul className="list-group">
+                                    {bomberos.map((b) => (
+                                        <li key={b.bombero_id} className="list-group-item">
+                                            <div>
+                                                <strong>{`${b.first_name} ${b.last_name}`}</strong>
+                                            </div>
+                                            <div className="text-muted small">
+                                                {b.motivo}
+                                            </div>
+                                            <div className="text-muted small">
+                                                {format(new Date(b.fecha_inicio), 'dd-MM-yyyy')} — {format(new Date(b.fecha_fin), 'dd-MM-yyyy')}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </Layout>
     );

@@ -55,9 +55,26 @@ const buildChartData = (totales, porcentajes) => {
   return { segments, total, chartData };
 };
 
+const formatDateForInput = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const formatDateForApi = (dateString) => {
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
+};
+
 const AsistenciaAnual = () => {
   const currentYear = new Date().getFullYear();
-  const [year, setYear] = useState(currentYear);
+  const [fechaInicio, setFechaInicio] = useState(
+    formatDateForInput(new Date(currentYear, 0, 1))
+  );
+  const [fechaFin, setFechaFin] = useState(
+    formatDateForInput(new Date(currentYear, 11, 31))
+  );
 
   const {
     data,
@@ -67,9 +84,12 @@ const AsistenciaAnual = () => {
     refetch,
     isFetching,
   } = useQuery({
-    queryKey: ["asistencia-anual", year],
-    queryFn: () => fetchWithToken(`/asistencia/anual/?anio=${year}`),
-    enabled: !!year,
+    queryKey: ["asistencia-anual", fechaInicio, fechaFin],
+    queryFn: () =>
+      fetchWithToken(
+        `/asistencia/anual?fecha-inicio=${formatDateForApi(fechaInicio)}&fecha-fin=${formatDateForApi(fechaFin)}`
+      ),
+    enabled: !!fechaInicio && !!fechaFin,
   });
 
   const resumen = useMemo(() => {
@@ -79,35 +99,34 @@ const AsistenciaAnual = () => {
     return buildChartData(data.totales, data.porcentajes);
   }, [data]);
 
-  const handlePrevYear = () => setYear((prev) => prev - 1);
-  const handleNextYear = () => setYear((prev) => prev + 1);
-  const handleCurrentYear = () => setYear(currentYear);
-
   return (
     <Layout>
       <div className="container rounded shadow-sm bg-white p-4">
         <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
           <div>
-            <h2 className="mb-1">Asistencia anual</h2>
+            <h2 className="mb-1">Asistencia por rango de fechas</h2>
             <p className="text-muted mb-0">
-              Consolidado de asistencia, licencias e inasistencias para el año seleccionado
+              Consolidado de asistencia, licencias e inasistencias para el rango seleccionado
             </p>
           </div>
-          <div className="d-flex gap-2">
-            <div className="btn-group btn-group-sm" role="group" aria-label="Seleccionar año">
-              <button type="button" className="btn btn-outline-secondary" onClick={handlePrevYear}>
-                {year - 1}
-              </button>
-              <button
-                type="button"
-                className={`btn btn-outline-primary ${year === currentYear ? "active text-white" : ""}`}
-                onClick={handleCurrentYear}
-              >
-                {currentYear}
-              </button>
-              <button type="button" className="btn btn-outline-secondary" onClick={handleNextYear}>
-                {year + 1}
-              </button>
+          <div className="d-flex gap-2 align-items-center">
+            <div className="d-flex gap-2 align-items-center">
+              <label className="form-label mb-0 small">Desde:</label>
+              <input
+                type="date"
+                className="form-control form-control-sm"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+              />
+            </div>
+            <div className="d-flex gap-2 align-items-center">
+              <label className="form-label mb-0 small">Hasta:</label>
+              <input
+                type="date"
+                className="form-control form-control-sm"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+              />
             </div>
             <button
               type="button"
@@ -121,14 +140,14 @@ const AsistenciaAnual = () => {
         </div>
 
         {isLoading ? (
-          <div>Cargando asistencia anual...</div>
+          <div>Cargando asistencia...</div>
         ) : isError ? (
           <div className="alert alert-danger" role="alert">
-            {error?.message || "No se pudo obtener la asistencia anual."}
+            {error?.message || "No se pudo obtener la asistencia."}
           </div>
         ) : !data ? (
           <div className="alert alert-info" role="alert">
-            No se encontró información para el año seleccionado.
+            No se encontró información para el rango seleccionado.
           </div>
         ) : (
           <>
@@ -139,7 +158,7 @@ const AsistenciaAnual = () => {
             <div className="row g-4 mb-4">
               <div className="col-md-8">
                 <div className="border rounded p-3 h-100">
-                  <h5 className="mb-3">Resumen del año {data.anio}</h5>
+                  <h5 className="mb-3">Resumen del período</h5>
                   <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 small text-muted">
                     <div className="col">
                       <div className="border rounded p-3 h-100">
@@ -207,7 +226,7 @@ const AsistenciaAnual = () => {
                     style={{ width: 220, height: 220, borderColor: "#dee2e6" }}
                   >
                     <div className="fw-bold h4 mb-0">0</div>
-                    <small>Sin registros para este año</small>
+                    <small>Sin registros para este período</small>
                   </div>
                 )}
               </div>

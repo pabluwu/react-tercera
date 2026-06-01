@@ -4,7 +4,6 @@ import {
     getPaginationRowModel,
     flexRender,
 } from '@tanstack/react-table';
-import { useMemo } from 'react';
 
 const Tabla = ({ data, columns, pageSize = 10 }) => {
     const table = useReactTable({
@@ -12,10 +11,8 @@ const Tabla = ({ data, columns, pageSize = 10 }) => {
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageSize,
-        state: {
+        initialState: {
             pagination: {
-                pageIndex: 0,
                 pageSize: pageSize,
             },
         },

@@ -37,6 +37,7 @@ import AsistenciaAnual from '../pages/Asistencia/AsistenciaAnual';
 import AsistenciasBomberos from '../pages/Asistencia/AsistenciasBomberos';
 import DetalleBomberoAsistencia from '../pages/Asistencia/DetalleBombero';
 import TodasLasCitaciones from '../pages/Citaciones/TodasLasCitaciones';
+import CrearExcepcionAsistencia from '../pages/Excepciones/CrearExcepcionAsistencia';
 import TesoreroRoute from '../auth/TesoreroRoute';
 import AyudanteSecretarioRoute from '../auth/AyudanteSecretarioRoute';
 import { isTesorero } from '../auth/roleUtils';
@@ -44,11 +45,15 @@ import OficialRoute from '../auth/OficialRoute';
 import PasswordResetRequest from '../pages/Auth/PasswordResetRequest';
 import PasswordResetConfirm from '../pages/Auth/PasswordResetConfirm';
 
+// Inventario
+import SalasList from '../pages/Inventario/SalasList';
+import SalaDetail from '../pages/Inventario/SalaDetail';
+
 const AppRoutes = () => {
 
     const { user } = useAuthStore();
     const userIsTesorero = isTesorero(user);
-    
+
     return (
         <Routes>
             <Route path="*" element={
@@ -197,6 +202,27 @@ const AppRoutes = () => {
                 <PrivateRoute>
                     <OficialRoute>
                         <DetalleBomberoAsistencia />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+
+            {/* Excepciones */}
+            <Route path="/excepciones/asistencia" element={
+                <PrivateRoute><CrearExcepcionAsistencia /></PrivateRoute>
+            } />
+
+            {/* Inventario */}
+            <Route path="/inventario/salas" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <SalasList />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/inventario/salas/:id" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <SalaDetail />
                     </OficialRoute>
                 </PrivateRoute>
             } />

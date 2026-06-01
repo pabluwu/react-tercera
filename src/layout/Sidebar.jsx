@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 import useAuthStore from '../store/useAuthStore';
 import { isTesorero, isAyudanteOrSecretario, isOficial } from '../auth/roleUtils';
-import { Home, User, ChevronDown, Shield, LibraryBig, ScrollText, ChevronUp, Activity, CircleDollarSign, ClipboardCheck } from 'lucide-react';
+import { Home, User, ChevronDown, Shield, LibraryBig, ScrollText, ChevronUp, Activity, CircleDollarSign, ClipboardCheck, Package } from 'lucide-react';
 
 const Sidebar = () => {
     const [openKeys, setOpenKeys] = useState([]);
@@ -63,6 +63,7 @@ const Sidebar = () => {
             children: [
                 { key: 'mis-licencias', label: 'Mis licencias', path: '/licencia/list' },
                 { key: 'gestion', label: 'Gestionar Licencias', path: '/licencia/gestionar' },
+                { key: 'excepcion', label: 'Excepciones asistencia', path: '/excepciones/asistencia' },
             ],
         },
         {
@@ -81,6 +82,12 @@ const Sidebar = () => {
                 userIsTesorero && { key: 'bandeja', label: 'Revisar bandeja', path: '/tesorero/bandeja' },
                 userIsTesorero && { key: 'registrar-comprobante', label: 'Registrar cuotas', path: '/tesorero/registrar' },
             ].filter(Boolean),
+        },
+        {
+            key: 'inventario', label: 'Inventario', icon: <Package size={18} />,
+            children: [
+                { key: 'salas', label: 'Gestión de Salas', path: '/inventario/salas' },
+            ],
         },
     ];
 
