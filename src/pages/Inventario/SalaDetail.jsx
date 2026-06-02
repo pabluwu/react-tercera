@@ -27,9 +27,8 @@ const SalaDetail = () => {
   const [itemFormData, setItemFormData] = useState({
     nombre: '',
     descripcion: '',
-    codigo: '',
-    cantidad: 1,
-    estado: 'Bueno'
+    ubicacion_especifica: '',
+    cantidad: 1
   });
 
   const fetchData = async () => {
@@ -64,7 +63,7 @@ const SalaDetail = () => {
     try {
       await createItem({ ...itemFormData, sala: parseInt(id) }, motivo);
       setShowCreateItemModal(false);
-      setItemFormData({ nombre: '', descripcion: '', codigo: '', cantidad: 1, estado: 'Bueno' });
+      setItemFormData({ nombre: '', descripcion: '', ubicacion_especifica: '', cantidad: 1 });
       fetchData();
     } catch (err) {
       alert('Error al crear el item: ' + err.message);
@@ -73,10 +72,10 @@ const SalaDetail = () => {
 
   const handleEditItem = async (motivo) => {
     try {
-      await updateItem(selectedItem.id, itemFormData, motivo);
+      await updateItem(selectedItem.id, { ...itemFormData, sala: parseInt(id) }, motivo);
       setShowEditItemModal(false);
       setSelectedItem(null);
-      setItemFormData({ nombre: '', descripcion: '', codigo: '', cantidad: 1, estado: 'Bueno' });
+      setItemFormData({ nombre: '', descripcion: '', ubicacion_especifica: '', cantidad: 1 });
       fetchData();
     } catch (err) {
       alert('Error al actualizar el item: ' + err.message);
@@ -115,9 +114,8 @@ const SalaDetail = () => {
     setItemFormData({
       nombre: item.nombre || '',
       descripcion: item.descripcion || '',
-      codigo: item.codigo || '',
-      cantidad: item.cantidad || 1,
-      estado: item.estado || 'Bueno'
+      ubicacion_especifica: item.ubicacion_especifica || '',
+      cantidad: item.cantidad || 1
     });
     setShowEditItemModal(true);
   };
@@ -187,7 +185,7 @@ const SalaDetail = () => {
           <button
             className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-200 dark:shadow-none group"
             onClick={() => {
-              setItemFormData({ nombre: '', descripcion: '', codigo: '', cantidad: 1, estado: 'Bueno' });
+              setItemFormData({ nombre: '', descripcion: '', ubicacion_especifica: '', cantidad: 1 });
               setShowCreateItemModal(true);
             }}
           >
@@ -247,18 +245,17 @@ const SalaDetail = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 dark:!bg-slate-800/50 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
-                  <th className="px-6 py-4">Código</th>
                   <th className="px-6 py-4">Nombre</th>
                   <th className="px-6 py-4">Descripción</th>
+                  <th className="px-6 py-4">Ubicación Específica</th>
                   <th className="px-6 py-4">Cantidad</th>
-                  <th className="px-6 py-4">Estado</th>
                   <th className="px-6 py-4 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                 {items.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                    <td colSpan="5" className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                       <div className="flex flex-col items-center gap-3">
                         <Layers size={48} className="text-slate-200 dark:text-slate-700" />
                         <p className="text-lg">No hay items registrados en esta sala</p>
@@ -268,31 +265,20 @@ const SalaDetail = () => {
                 ) : (
                   items.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
-                      <td className="px-6 py-4">
-                        <span className="font-mono text-sm bg-slate-100 dark:!bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-400">
-                          {item.codigo || '-'}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 font-bold text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {item.nombre}
                       </td>
                       <td className="px-6 py-4 text-slate-500 dark:text-slate-400 max-w-xs">
                         <span className="line-clamp-1">{item.description || item.descripcion || '-'}</span>
                       </td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
+                        <div className="flex items-center gap-1.5">
+                          <MapPin size={14} className="text-slate-400" />
+                          <span>{item.ubicacion_especifica || '-'}</span>
+                        </div>
+                      </td>
                       <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
                         {item.cantidad} unidades
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
-                          item.estado === 'Bueno' 
-                            ? 'bg-green-100 dark:!bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800' 
-                            : item.estado === 'Regular' 
-                            ? 'bg-amber-100 dark:!bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800' 
-                            : 'bg-red-100 dark:!bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800'
-                        }`}>
-                          <Activity size={12} className="mr-1.5" />
-                          {item.estado}
-                        </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
@@ -349,13 +335,13 @@ const SalaDetail = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Código</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Ubicación Específica</label>
               <input
                 type="text"
-                placeholder="Ej: HER-001"
+                placeholder="Ej: Estante A, Nivel 2"
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200 dark:!bg-slate-800 dark:text-white"
-                value={itemFormData.codigo}
-                onChange={(e) => setItemFormData({ ...itemFormData, codigo: e.target.value })}
+                value={itemFormData.ubicacion_especifica}
+                onChange={(e) => setItemFormData({ ...itemFormData, ubicacion_especifica: e.target.value })}
               />
             </div>
             <div className="space-y-2">
@@ -368,18 +354,6 @@ const SalaDetail = () => {
                 onChange={(e) => setItemFormData({ ...itemFormData, cantidad: parseInt(e.target.value) || 1 })}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Estado *</label>
-              <select
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200 dark:!bg-slate-800 dark:text-white appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.75rem_center] bg-no-repeat"
-                value={itemFormData.estado}
-                onChange={(e) => setItemFormData({ ...itemFormData, estado: e.target.value })}
-              >
-                <option value="Bueno">Bueno</option>
-                <option value="Regular">Regular</option>
-                <option value="Malo">Malo</option>
-              </select>
             </div>
             <div className="md:col-span-2 space-y-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Descripción</label>
@@ -415,12 +389,12 @@ const SalaDetail = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Código</label>
+              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Ubicación Específica</label>
               <input
                 type="text"
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200 dark:!bg-slate-800 dark:text-white"
-                value={itemFormData.codigo}
-                onChange={(e) => setItemFormData({ ...itemFormData, codigo: e.target.value })}
+                value={itemFormData.ubicacion_especifica}
+                onChange={(e) => setItemFormData({ ...itemFormData, ubicacion_especifica: e.target.value })}
               />
             </div>
             <div className="space-y-2">
@@ -433,18 +407,6 @@ const SalaDetail = () => {
                 onChange={(e) => setItemFormData({ ...itemFormData, cantidad: parseInt(e.target.value) || 1 })}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Estado *</label>
-              <select
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200 dark:!bg-slate-800 dark:text-white appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.75rem_center] bg-no-repeat"
-                value={itemFormData.estado}
-                onChange={(e) => setItemFormData({ ...itemFormData, estado: e.target.value })}
-              >
-                <option value="Bueno">Bueno</option>
-                <option value="Regular">Regular</option>
-                <option value="Malo">Malo</option>
-              </select>
             </div>
             <div className="md:col-span-2 space-y-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Descripción</label>

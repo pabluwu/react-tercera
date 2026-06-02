@@ -48,6 +48,7 @@ import PasswordResetConfirm from '../pages/Auth/PasswordResetConfirm';
 // Inventario
 import SalasList from '../pages/Inventario/SalasList';
 import SalaDetail from '../pages/Inventario/SalaDetail';
+import InventarioLogs from '../pages/Inventario/InventarioLogs';
 
 const AppRoutes = () => {
 
@@ -223,6 +224,13 @@ const AppRoutes = () => {
                 <PrivateRoute>
                     <OficialRoute>
                         <SalaDetail />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/inventario/logs" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <InventarioLogs />
                     </OficialRoute>
                 </PrivateRoute>
             } />

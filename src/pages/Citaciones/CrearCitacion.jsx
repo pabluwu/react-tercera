@@ -1,19 +1,30 @@
 import { useForm } from 'react-hook-form';
 import { usePerfiles } from '../../hooks/usePerfiles';
+import { useResponsables } from '../../hooks/useResponsables';
 import { useCrearCitacion } from '../../hooks/useCrearCitacion';
-import { useState } from 'react';
-import { Loader2, PlusCircle, ArrowLeft, Calendar, MapPin, Shirt, Info, Search, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Loader2, PlusCircle, ArrowLeft, Calendar, MapPin, Shirt, Info, Search, User, ShieldCheck } from 'lucide-react';
 import Layout from '../../layout/Layout';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import useAuthStore from '../../store/useAuthStore';
 
 const CrearCitacion = () => {
+    const user = useAuthStore(state => state.user);
     const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
     const { data: perfiles } = usePerfiles();
+    const { data: responsables, isLoading: loadingResponsables } = useResponsables();
     const { mutate, isPending } = useCrearCitacion();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setValue('autor', user.id);
+            setSearchTerm(`${user.first_name} ${user.last_name}`);
+        }
+    }, [user, setValue]);
 
     const filteredPerfiles = (perfiles || []).filter((p) => {
         const full = `${p.user.first_name} ${p.user.last_name} ${p.user.username}`.toLowerCase();
@@ -25,7 +36,10 @@ const CrearCitacion = () => {
             onSuccess: () => {
                 toast.success('Citación publicada correctamente');
                 reset();
-                setSearchTerm('');
+                if (user) {
+                    setValue('autor', user.id);
+                    setSearchTerm(`${user.first_name} ${user.last_name}`);
+                }
                 setShowSuggestions(false);
             },
             onError: (error) => {
@@ -120,6 +134,23 @@ const CrearCitacion = () => {
                     <div className="space-y-6">
                         <div className="!bg-white dark:!bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6 transition-all duration-300">
                             <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
+                                        <ShieldCheck size={14} className="text-red-500" /> Responsable *
+                                    </label>
+                                    <select 
+                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-3.5 px-5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500/20 focus:bg-white dark:focus:bg-slate-700 transition-all outline-none appearance-none"
+                                        {...register('responsable', { required: true })}
+                                        disabled={loadingResponsables}
+                                    >
+                                        <option value="">Seleccione un cargo...</option>
+                                        {responsables?.map((r) => (
+                                            <option key={r.value} value={r.value}>{r.label}</option>
+                                        ))}
+                                    </select>
+                                    {errors.responsable && <p className="text-xs font-bold text-red-500 pl-1">El responsable es requerido</p>}
+                                </div>
+
                                 <div className="space-y-2 relative">
                                     <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
                                         <Search size={14} className="text-red-500" /> Autor / Quien cita *

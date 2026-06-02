@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSalas, createSala, updateSala, deleteSala } from '../../api/inventario';
 import ModalConfirmacion from '../../components/ModalConfirmacion';
 import Layout from '../../layout/Layout';
-import { Plus, Edit2, Trash2, Eye, MapPin, Box, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, MapPin, Box, Loader2, AlertCircle, History } from 'lucide-react';
 
 const SalasList = () => {
   const navigate = useNavigate();
@@ -20,8 +20,7 @@ const SalasList = () => {
   // Form data
   const [formData, setFormData] = useState({
     nombre: '',
-    descripcion: '',
-    ubicacion: ''
+    descripcion: ''
   });
 
   const fetchSalas = async () => {
@@ -48,7 +47,7 @@ const SalasList = () => {
     try {
       await createSala(formData, motivo);
       setShowCreateModal(false);
-      setFormData({ nombre: '', descripcion: '', ubicacion: '' });
+      setFormData({ nombre: '', descripcion: '' });
       fetchSalas();
     } catch (err) {
       alert('Error al crear la sala: ' + err.message);
@@ -60,7 +59,7 @@ const SalasList = () => {
       await updateSala(selectedSala.id, formData, motivo);
       setShowEditModal(false);
       setSelectedSala(null);
-      setFormData({ nombre: '', descripcion: '', ubicacion: '' });
+      setFormData({ nombre: '', descripcion: '' });
       fetchSalas();
     } catch (err) {
       alert('Error al actualizar la sala: ' + err.message);
@@ -82,8 +81,7 @@ const SalasList = () => {
     setSelectedSala(sala);
     setFormData({
       nombre: sala.nombre || '',
-      descripcion: sala.descripcion || '',
-      ubicacion: sala.ubicacion || ''
+      descripcion: sala.descripcion || ''
     });
     setShowEditModal(true);
   };
@@ -117,16 +115,25 @@ const SalasList = () => {
               <p className="text-slate-500 dark:text-slate-400">Administra las ubicaciones del inventario</p>
             </div>
           </div>
-          <button
-            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-200 dark:shadow-none group"
-            onClick={() => {
-              setFormData({ nombre: '', descripcion: '', ubicacion: '' });
-              setShowCreateModal(true);
-            }}
-          >
-            <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-            Nueva Sala
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              className="flex items-center justify-center gap-2 bg-slate-100 dark:!bg-slate-800 text-slate-700 dark:text-slate-200 font-bold px-6 py-4 rounded-2xl transition-all duration-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+              onClick={() => navigate('/inventario/logs')}
+            >
+              <History size={20} />
+              Ver Historial
+            </button>
+            <button
+              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-200 dark:shadow-none group"
+              onClick={() => {
+                setFormData({ nombre: '', descripcion: '' });
+                setShowCreateModal(true);
+              }}
+            >
+              <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+              Nueva Sala
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -143,7 +150,6 @@ const SalasList = () => {
                 <tr className="bg-slate-50 dark:!bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
                   <th className="px-6 py-5 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Nombre</th>
                   <th className="px-6 py-5 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Descripción</th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Ubicación</th>
                   <th className="px-6 py-5 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Estado</th>
                   <th className="px-6 py-5 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-right">Acciones</th>
                 </tr>
@@ -151,7 +157,7 @@ const SalasList = () => {
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                 {salas.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                    <td colSpan="4" className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                       <div className="flex flex-col items-center gap-3">
                         <Box size={48} className="text-slate-200 dark:text-slate-700" />
                         <p className="text-lg">No hay salas disponibles</p>
@@ -168,12 +174,6 @@ const SalasList = () => {
                       </td>
                       <td className="px-6 py-5 text-slate-600 dark:text-slate-400">
                         <span className="line-clamp-1">{sala.description || sala.descripcion || '-'}</span>
-                      </td>
-                      <td className="px-6 py-5 text-slate-600 dark:text-slate-400">
-                        <div className="flex items-center gap-1.5">
-                          <MapPin size={14} className="text-slate-400" />
-                          <span>{sala.ubicacion || '-'}</span>
-                        </div>
                       </td>
                       <td className="px-6 py-5">
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 dark:!bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800">
@@ -237,18 +237,6 @@ const SalasList = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
-                <MapPin size={16} /> Ubicación
-              </label>
-              <input
-                type="text"
-                placeholder="Ej: Segundo piso, pasillo B"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200 dark:!bg-slate-800 dark:text-white"
-                value={formData.ubicacion}
-                onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Descripción</label>
               <textarea
                 placeholder="Detalles adicionales sobre la sala..."
@@ -281,17 +269,6 @@ const SalasList = () => {
                 value={formData.nombre}
                 onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                 required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
-                <MapPin size={16} /> Ubicación
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all duration-200 dark:!bg-slate-800 dark:text-white"
-                value={formData.ubicacion}
-                onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
               />
             </div>
             <div className="space-y-2">

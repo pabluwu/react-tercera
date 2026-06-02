@@ -12,8 +12,8 @@ const columnHelper = createColumnHelper();
 
 const GestionarLicencias = () => {
     const { data = [], isLoading, refetch, isFetching } = useQuery({
-        queryKey: ['all_citaciones'],
-        queryFn: () => fetchWithToken(`/citaciones/`),
+        queryKey: ['all_citaciones_with_licencias'],
+        queryFn: () => fetchWithToken(`/licencias/citaciones_con_licencias/`),
     });
 
     const columns = useMemo(
@@ -32,6 +32,20 @@ const GestionarLicencias = () => {
                     <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <Calendar size={14} />
                         <span className="text-sm">{format(new Date(info.getValue()), 'dd-MM-yyyy HH:mm')}</span>
+                    </div>
+                ),
+            }),
+            columnHelper.accessor('num_licencias', {
+                header: 'Licencias',
+                cell: info => (
+                    <div className="flex items-center gap-2">
+                        <div className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${
+                            info.getValue() > 0 
+                            ? 'bg-amber-50 text-amber-600 border-amber-200 dark:!bg-amber-500/10 dark:text-amber-500 dark:border-amber-500/20' 
+                            : 'bg-slate-50 text-slate-400 border-slate-200 dark:!bg-slate-800 dark:text-slate-500 dark:border-slate-700'
+                        }`}>
+                            {info.getValue()} {info.getValue() === 1 ? 'Licencia' : 'Licencias'}
+                        </div>
                     </div>
                 ),
             }),
