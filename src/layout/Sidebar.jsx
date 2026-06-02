@@ -206,7 +206,7 @@ const Sidebar = () => {
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">FireControl</h2>
-                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Bomberos de Chile</p>
+                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Tercera Cía Qta</p>
                             </div>
                         </div>
                         <button 
