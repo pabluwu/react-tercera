@@ -5,14 +5,14 @@ import { useState } from 'react';
 import { Loader2, PlusCircle, ArrowLeft, Calendar, MapPin, Shirt, Info, Search, User } from 'lucide-react';
 import Layout from '../../layout/Layout';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const CrearCitacion = () => {
-    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm();
-    const { data: perfiles, isLoading: perfilesLoading } = usePerfiles();
+    const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
+    const { data: perfiles } = usePerfiles();
     const { mutate, isPending } = useCrearCitacion();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedUser, setSelectedItem] = useState(null);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
     const filteredPerfiles = (perfiles || []).filter((p) => {
@@ -21,7 +21,17 @@ const CrearCitacion = () => {
     });
 
     const onSubmit = (data) => {
-        mutate(data);
+        mutate(data, {
+            onSuccess: () => {
+                toast.success('Citación publicada correctamente');
+                reset();
+                setSearchTerm('');
+                setShowSuggestions(false);
+            },
+            onError: (error) => {
+                toast.error(error?.message || 'Error al publicar la citación');
+            }
+        });
     };
 
     return (
@@ -141,7 +151,6 @@ const CrearCitacion = () => {
                                                             onClick={() => {
                                                                 setValue('autor', p.user.id);
                                                                 setSearchTerm(`${p.user.first_name} ${p.user.last_name}`);
-                                                                setSelectedItem(p);
                                                                 setShowSuggestions(false);
                                                             }}
                                                         >

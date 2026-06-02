@@ -4,8 +4,10 @@ import { useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import Tabla from '../../components/Tabla';
 import Layout from '../../layout/Layout';
-import useAuthStore from '../../store/useAuthStore';
 import { useParams } from 'react-router-dom';
+import { FileDown } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const columnHelper = createColumnHelper();
 
@@ -16,7 +18,43 @@ const LicenciasPorCitacion = () => {
         queryFn: () => fetchWithToken(`/licencias/?citacion=${citacionId}`),
     });
 
-    console.log(data);
+    const downloadPDF = () => {
+        if (!data || data.length === 0) return;
+
+        const doc = new jsPDF();
+        const firstItem = data[0];
+        const citacionInfo = firstItem.citacion_info || {};
+
+        // Título del PDF
+        doc.setFontSize(18);
+        doc.text('Reporte de Licencias por Citación', 14, 22);
+
+        // Detalle de la citación
+        doc.setFontSize(11);
+        doc.setTextColor(100);
+        doc.text(`Citación: ${citacionInfo.nombre || 'N/A'} (#${citacionId})`, 14, 32);
+        doc.text(`Fecha: ${citacionInfo.fecha ? new Date(citacionInfo.fecha).toLocaleString() : 'N/A'}`, 14, 38);
+        doc.text(`Generado el: ${new Date().toLocaleString()}`, 14, 44);
+
+        // Tabla de datos
+        const tableColumn = ["Autor", "Fecha Licencia", "Motivo"];
+        const tableRows = data.map(item => [
+            `${item.autor_info.first_name} ${item.autor_info.last_name}`,
+            new Date(item.fecha_licencia).toLocaleString(),
+            item.motivo
+        ]);
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 55,
+            theme: 'striped',
+            headStyles: { fillColor: [220, 38, 38] }, // Red-600
+            styles: { fontSize: 9 },
+        });
+
+        doc.save(`licencias-citacion-${citacionId}.pdf`);
+    };
 
     const columns = useMemo(
         () => [
@@ -57,6 +95,14 @@ const LicenciasPorCitacion = () => {
                     <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
                         Licencias para citación <span className="text-red-600">#{citacionId}</span>
                     </h3>
+                    <button
+                        onClick={downloadPDF}
+                        disabled={isLoading || data.length === 0}
+                        className="flex items-center justify-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg shadow-red-600/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <FileDown size={20} />
+                        Descargar PDF
+                    </button>
                 </div>
 
                 <div className="!bg-white dark:!bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
