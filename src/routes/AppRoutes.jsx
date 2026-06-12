@@ -49,6 +49,18 @@ import PasswordResetConfirm from '../pages/Auth/PasswordResetConfirm';
 import SalasList from '../pages/Inventario/SalasList';
 import SalaDetail from '../pages/Inventario/SalaDetail';
 import InventarioLogs from '../pages/Inventario/InventarioLogs';
+import ModuleRoute from '../auth/ModuleRoute';
+
+import PlanificarGuardias from '../pages/Guardias/PlanificarGuardias';
+import MisGuardias from '../pages/Guardias/MisGuardias';
+import SolicitudesReemplazo from '../pages/Guardias/SolicitudesReemplazo';
+
+// Encuestas
+import EncuestasList from '../pages/Encuestas/EncuestasList';
+import CrearEncuesta from '../pages/Encuestas/CrearEncuesta';
+import ResponderEncuesta from '../pages/Encuestas/ResponderEncuesta';
+import VerResultados from '../pages/Encuestas/VerResultados';
+import MisEncuestas from '../pages/Encuestas/MisEncuestas';
 
 const AppRoutes = () => {
 
@@ -119,48 +131,70 @@ const AppRoutes = () => {
             <Route path="/archivos/subir" element={
                 <PrivateRoute>
                     <OficialRoute>
-                        <SubirArchivo />
+                        <ModuleRoute moduleName="archivos">
+                            <SubirArchivo />
+                        </ModuleRoute>
                     </OficialRoute>
                 </PrivateRoute>
             } />
             <Route path="/archivos/ver" element={
-                <PrivateRoute><SeleccionarTipoArchivo /></PrivateRoute>
+                <PrivateRoute>
+                    <ModuleRoute moduleName="archivos">
+                        <SeleccionarTipoArchivo />
+                    </ModuleRoute>
+                </PrivateRoute>
             } />
             <Route path="/archivos/:tipo" element={
-                <PrivateRoute><ListaArchivosPorTipo /></PrivateRoute>
+                <PrivateRoute>
+                    <ModuleRoute moduleName="archivos">
+                        <ListaArchivosPorTipo />
+                    </ModuleRoute>
+                </PrivateRoute>
             } />
 
             {/* Tesoreria */}
             <Route path="/bombero/subir-comprobante" element={
-                <PrivateRoute><BomberoSubirComprobante /></PrivateRoute>
+                <PrivateRoute>
+                    <ModuleRoute moduleName="tesoreria">
+                        <BomberoSubirComprobante />
+                    </ModuleRoute>
+                </PrivateRoute>
             } />
             {userIsTesorero && (
                 <>
                     <Route path="/tesorero/bandeja" element={
                         <PrivateRoute>
                             <TesoreroRoute>
-                                <TesoreraBandeja />
+                                <ModuleRoute moduleName="tesoreria">
+                                    <TesoreraBandeja />
+                                </ModuleRoute>
                             </TesoreroRoute>
                         </PrivateRoute>
                     } />
                     <Route path="/tesorero/registrar" element={
                         <PrivateRoute>
                             <TesoreroRoute>
-                                <TesoreraRegistrarComprobante />
+                                <ModuleRoute moduleName="tesoreria">
+                                    <TesoreraRegistrarComprobante />
+                                </ModuleRoute>
                             </TesoreroRoute>
                         </PrivateRoute>
                     } />
                     <Route path="/tesorero/revisar" element={
                         <PrivateRoute>
                             <TesoreroRoute>
-                                <RevisarCuotas />
+                                <ModuleRoute moduleName="tesoreria">
+                                    <RevisarCuotas />
+                                </ModuleRoute>
                             </TesoreroRoute>
                         </PrivateRoute>
                     } />
                     <Route path="/tesorero/revisar/:id" element={
                         <PrivateRoute>
                             <TesoreroRoute>
-                                <RevisarCuotaDetalleBombero />
+                                <ModuleRoute moduleName="tesoreria">
+                                    <RevisarCuotaDetalleBombero />
+                                </ModuleRoute>
                             </TesoreroRoute>
                         </PrivateRoute>
                     } />
@@ -175,7 +209,11 @@ const AppRoutes = () => {
                 <PrivateRoute><MiAsistencia /></PrivateRoute>
             } />
             <Route path="/tesorero/mis-cuotas" element={
-                <PrivateRoute><MisCuotas /></PrivateRoute>
+                <PrivateRoute>
+                    <ModuleRoute moduleName="tesoreria">
+                        <MisCuotas />
+                    </ModuleRoute>
+                </PrivateRoute>
             } />
             <Route path="/asistencia/citaciones" element={
                 <PrivateRoute><AsistenciasCitaciones /></PrivateRoute>
@@ -216,22 +254,93 @@ const AppRoutes = () => {
             <Route path="/inventario/salas" element={
                 <PrivateRoute>
                     <OficialRoute>
-                        <SalasList />
+                        <ModuleRoute moduleName="inventario">
+                            <SalasList />
+                        </ModuleRoute>
                     </OficialRoute>
                 </PrivateRoute>
             } />
             <Route path="/inventario/salas/:id" element={
                 <PrivateRoute>
                     <OficialRoute>
-                        <SalaDetail />
+                        <ModuleRoute moduleName="inventario">
+                            <SalaDetail />
+                        </ModuleRoute>
                     </OficialRoute>
                 </PrivateRoute>
             } />
             <Route path="/inventario/logs" element={
                 <PrivateRoute>
                     <OficialRoute>
-                        <InventarioLogs />
+                        <ModuleRoute moduleName="inventario">
+                            <InventarioLogs />
+                        </ModuleRoute>
                     </OficialRoute>
+                </PrivateRoute>
+            } />
+
+            {/* Guardias */}
+            <Route path="/guardias/crear" element={
+                <PrivateRoute>
+                    <AyudanteSecretarioRoute>
+                        <ModuleRoute moduleName="guardias">
+                            <PlanificarGuardias />
+                        </ModuleRoute>
+                    </AyudanteSecretarioRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/guardias/mis-guardias" element={
+                <PrivateRoute>
+                    <ModuleRoute moduleName="guardias">
+                        <MisGuardias />
+                    </ModuleRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/guardias/solicitudes" element={
+                <PrivateRoute>
+                    <ModuleRoute moduleName="guardias">
+                        <SolicitudesReemplazo showHistory={false} />
+                    </ModuleRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/guardias/solicitudes/historico" element={
+                <PrivateRoute>
+                    <ModuleRoute moduleName="guardias">
+                        <SolicitudesReemplazo showHistory={true} />
+                    </ModuleRoute>
+                </PrivateRoute>
+            } />
+
+            {/* Encuestas */}
+            <Route path="/encuestas" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <EncuestasList />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/encuestas/crear" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <CrearEncuesta />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/encuestas/:id/resultados" element={
+                <PrivateRoute>
+                    <OficialRoute>
+                        <VerResultados />
+                    </OficialRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/encuestas/responder/:uuid" element={
+                <PrivateRoute>
+                    <ResponderEncuesta />
+                </PrivateRoute>
+            } />
+            <Route path="/encuestas/mis-encuestas" element={
+                <PrivateRoute>
+                    <MisEncuestas />
                 </PrivateRoute>
             } />
 

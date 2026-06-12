@@ -15,7 +15,9 @@ import {
     Package, 
     X, 
     Menu,
-    LayoutDashboard
+    LayoutDashboard,
+    Calendar,
+    ClipboardList
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -26,6 +28,7 @@ const Sidebar = () => {
     const userIsTesorero = isTesorero(user);
     const userPuedeCrearCitacion = isAyudanteOrSecretario(user);
     const userEsOficial = isOficial(user);
+    const modulosActivos = user?.tenant?.modulos_activos || [];
 
     const menuItems = [
         { key: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
@@ -78,6 +81,7 @@ const Sidebar = () => {
         },
         {
             key: 'archivos', label: 'Archivos', icon: <LibraryBig size={20} />,
+            module: 'archivos',
             children: [
                 userEsOficial && { key: 'subir-archivo', label: 'Subir archivo', path: '/archivos/subir' },
                 { key: 'revisar-archivos', label: 'Revisar archivos', path: '/archivos/ver' },
@@ -85,6 +89,7 @@ const Sidebar = () => {
         },
         {
             key: 'tesoreria', label: 'Tesoreria', icon: <CircleDollarSign size={20} />,
+            module: 'tesoreria',
             children: [
                 userIsTesorero && { key: 'revisar-cuotas', label: 'Revisar cuotas', path: '/tesorero/revisar' },
                 { key: 'mis-cuotas', label: 'Mis cuotas', path: '/tesorero/mis-cuotas' },
@@ -95,9 +100,28 @@ const Sidebar = () => {
         },
         {
             key: 'inventario', label: 'Inventario', icon: <Package size={20} />,
+            module: 'inventario',
             children: [
                 { key: 'salas', label: 'Gestión de Salas', path: '/inventario/salas' },
             ],
+        },
+        {
+            key: 'guardias', label: 'Guardias', icon: <Calendar size={20} />,
+            module: 'guardias',
+            children: [
+                userPuedeCrearCitacion && { key: 'planificar-guardias', label: 'Planificar Guardias', path: '/guardias/crear' },
+                { key: 'mis-guardias', label: 'Mis Guardias', path: '/guardias/mis-guardias' },
+                { key: 'solicitudes-reemplazo', label: 'Solicitudes Vigentes', path: '/guardias/solicitudes' },
+                { key: 'solicitudes-historico', label: 'Historial Solicitudes', path: '/guardias/solicitudes/historico' },
+            ].filter(Boolean),
+        },
+        {
+            key: 'encuestas', label: 'Encuestas', icon: <ClipboardList size={20} />,
+            children: [
+                userEsOficial && { key: 'gestion-encuestas', label: 'Gestionar Encuestas', path: '/encuestas' },
+                userEsOficial && { key: 'crear-encuesta', label: 'Crear Encuesta', path: '/encuestas/crear' },
+                { key: 'mis-encuestas', label: 'Mis Encuestas', path: '/encuestas/mis-encuestas' },
+            ].filter(Boolean),
         },
     ];
 
@@ -220,7 +244,7 @@ const Sidebar = () => {
                     {/* Navigation Links */}
                     <nav className="flex-1 space-y-1 overflow-y-auto pr-1 custom-scrollbar">
                         <p className="mb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Navegación</p>
-                        {menuItems.map((item) => (
+                        {menuItems.filter((item) => !item.module || modulosActivos.includes(item.module)).map((item) => (
                             <MenuItem key={item.key} item={item} isMobile={true} />
                         ))}
                     </nav>

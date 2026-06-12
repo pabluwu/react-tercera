@@ -26,7 +26,7 @@ import { es } from 'date-fns/locale';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
-const ModalCitacionesDia = ({ isOpen, onClose, day, citaciones }) => {
+const ModalCitacionesDia = ({ isOpen, onClose, day, citaciones, guardia }) => {
     const navigate = useNavigate();
     if (!isOpen || !day) return null;
 
@@ -52,8 +52,30 @@ const ModalCitacionesDia = ({ isOpen, onClose, day, citaciones }) => {
                     </button>
                 </div>
                 <div className="p-8 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                    {citaciones.length === 0 ? (
-                        <p className="text-center py-8 text-slate-500 italic">No hay citaciones para este día.</p>
+                    {guardia && (
+                        <div className="p-5 rounded-3xl bg-blue-50/50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/20 space-y-3">
+                            <h4 className="font-bold text-blue-800 dark:text-blue-400 text-base leading-tight flex items-center gap-2">
+                                <span className="inline-block w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
+                                Tienes Guardia Asignada
+                            </h4>
+                            <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1">
+                                <div><strong>Tu Rol:</strong> {guardia.rol_asignado}</div>
+                                <div><strong>Oficial:</strong> {guardia.oficial ? `${guardia.oficial.first_name} ${guardia.oficial.last_name}` : <span className="italic text-slate-400">Pendiente</span>}</div>
+                                <div><strong>Conductor:</strong> {guardia.conductor ? `${guardia.conductor.first_name} ${guardia.conductor.last_name}` : <span className="italic text-slate-400">Pendiente</span>}</div>
+                                <div className="mt-1">
+                                    <strong>Personal de Guardia:</strong>
+                                    <span className="block mt-0.5 pl-3 text-slate-500 dark:text-slate-400">
+                                        {guardia.bomberos && guardia.bomberos.length > 0 
+                                            ? guardia.bomberos.map(b => `${b.first_name} ${b.last_name}`).join(', ')
+                                            : 'Sin asignar'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {citaciones.length === 0 && !guardia ? (
+                        <p className="text-center py-8 text-slate-500 italic">No hay actividades para este día.</p>
                     ) : (
                         citaciones.map(cita => (
                             <div key={cita.id} className="p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 space-y-4">
@@ -107,12 +129,20 @@ const Calendario = () => {
     const today = new Date();
     const currentYear = getYear(today);
 
+    const user = useAuthStore((state) => state.user);
+
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
     const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
     const { data: citaciones, isLoading } = useCitacionesPorRango(startDate, endDate);
+
+    const { data: guardias } = useQuery({
+        queryKey: ['guardias-dashboard-rango', startDate, endDate],
+        queryFn: () => fetchWithToken(`/guardias/rango/?fecha-inicio=${format(startDate, 'yyyy-MM-dd')}&fecha-fin=${format(endDate, 'yyyy-MM-dd')}&excluir-borradores=true`),
+        enabled: !!user?.tenant?.modulos_activos?.includes('guardias')
+    });
 
     const calendarDays = eachDayOfInterval({
         start: startDate,
@@ -141,9 +171,26 @@ const Calendario = () => {
         return citaciones.filter(c => isSameDay(new Date(c.fecha), day));
     };
 
+    const getGuardiaDay = (day) => {
+        if (!guardias || !Array.isArray(guardias)) return null;
+        const g = guardias.find(guardia => isSameDay(new Date(guardia.fecha + 'T00:00:00'), day));
+        if (!g) return null;
+        
+        const isOficial = g.oficial?.id === user?.id;
+        const isConductor = g.conductor?.id === user?.id;
+        const isBombero = g.bomberos?.some(b => b.id === user?.id);
+        
+        if (isOficial) return { ...g, rol_asignado: 'Oficial' };
+        if (isConductor) return { ...g, rol_asignado: 'Conductor' };
+        if (isBombero) return { ...g, rol_asignado: 'Bombero' };
+        
+        return null;
+    };
+
     const handleDayClick = (day) => {
         const dayCitaciones = getCitacionesDay(day);
-        if (dayCitaciones.length > 0) {
+        const dayGuardia = getGuardiaDay(day);
+        if (dayCitaciones.length > 0 || dayGuardia) {
             setSelectedDay(day);
             setIsModalOpen(true);
         }
@@ -156,6 +203,7 @@ const Calendario = () => {
                 onClose={() => setIsModalOpen(false)} 
                 day={selectedDay} 
                 citaciones={selectedDay ? getCitacionesDay(selectedDay) : []} 
+                guardia={selectedDay ? getGuardiaDay(selectedDay) : null}
             />
             <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
                 <div className="flex items-center gap-3">
@@ -195,6 +243,7 @@ const Calendario = () => {
                 <div className="grid grid-cols-7 gap-1 sm:gap-2">
                     {calendarDays.map((day, idx) => {
                         const dayCitaciones = getCitacionesDay(day);
+                        const dayGuardia = getGuardiaDay(day);
                         const isCurrentMonth = isSameMonth(day, monthStart);
                         
                         return (
@@ -207,7 +256,7 @@ const Calendario = () => {
                                         : isToday(day)
                                             ? 'bg-red-50/50 dark:bg-red-500/5 border-red-100 dark:border-red-500/20'
                                             : 'bg-white dark:bg-slate-900 border-slate-50 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 shadow-sm hover:shadow-md'
-                                } ${dayCitaciones.length > 0 ? 'ring-2 ring-red-500/10' : ''}`}
+                                } ${dayCitaciones.length > 0 || dayGuardia ? 'ring-2 ring-red-500/10' : ''}`}
                             >
                                 <span className={`text-xs font-bold ${
                                     isToday(day) ? 'text-red-600 dark:text-red-500' : 'text-slate-500 dark:text-slate-400'
@@ -225,6 +274,14 @@ const Calendario = () => {
                                             {cita.nombre}
                                         </div>
                                     ))}
+                                    {dayGuardia && (
+                                        <div 
+                                            title={`Guardia Asignada - Rol: ${dayGuardia.rol_asignado}`}
+                                            className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-500/20 border-l-2 border-blue-500 text-[9px] sm:text-[10px] text-blue-700 dark:text-blue-400 font-bold rounded-sm truncate"
+                                        >
+                                            Guardia ({dayGuardia.rol_asignado})
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );

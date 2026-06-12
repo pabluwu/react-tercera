@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { loginUser } from '../../api/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 import { Eye, EyeOff, Lock, User, Flame } from 'lucide-react';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { useState } from 'react';
 const Login = () => {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
+  const location = useLocation();
   const login = useAuthStore((s) => s.login);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -16,7 +17,8 @@ const Login = () => {
     mutationFn: loginUser,
     onSuccess: async ({ access, refresh }) => {
       await login(access, refresh);
-      navigate('/dashboard');
+      const from = location.state?.from || '/dashboard';
+      navigate(from, { replace: true });
     },
     onError: () => alert('Credenciales inválidas'),
   });
