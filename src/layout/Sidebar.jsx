@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 import useAuthStore from '../store/useAuthStore';
-import { isTesorero, isAyudanteOrSecretario, isOficial } from '../auth/roleUtils';
+import { isTesorero, isAyudanteOrSecretario, isOficial, canSeeLicencias } from '../auth/roleUtils';
 import { 
     Home, 
     User, 
@@ -30,6 +30,7 @@ const Sidebar = () => {
     const userIsTesorero = isTesorero(user);
     const userPuedeCrearCitacion = isAyudanteOrSecretario(user);
     const userEsOficial = isOficial(user);
+    const userPuedeGestionarLicencias = canSeeLicencias(user);
     const modulosActivos = user?.tenant?.modulos_activos || [];
 
 
@@ -79,9 +80,9 @@ const Sidebar = () => {
             key: 'licencias', label: 'Licencias', icon: <Shield size={20} />,
             children: [
                 { key: 'mis-licencias', label: 'Mis licencias', path: '/licencia/list' },
-                { key: 'gestion', label: 'Gestionar Licencias', path: '/licencia/gestionar' },
+                userPuedeGestionarLicencias && { key: 'gestion', label: 'Gestionar Licencias', path: '/licencia/gestionar' },
                 { key: 'excepcion', label: 'Excepciones asistencia', path: '/excepciones/asistencia' },
-            ],
+            ].filter(Boolean),
         },
         {
             key: 'archivos', label: 'Archivos', icon: <LibraryBig size={20} />,

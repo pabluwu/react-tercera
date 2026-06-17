@@ -6,16 +6,19 @@ import { fetchWithToken } from '../../api/fetchWithToken';
 import { toast } from 'react-toastify';
 import { useLicenciaExistente } from '../../hooks/useLicenciaExistente';
 import Layout from '../../layout/Layout';
-import { ClipboardEdit, AlertCircle, Info, CalendarClock, Send } from 'lucide-react';
+import { ClipboardEdit, AlertCircle, Info, CalendarClock, Send, FileText } from 'lucide-react';
 
 const RegistrarLicencia = () => {
     const { id: citacionId } = useParams();
     const userId = useAuthStore((s) => s.user?.id);
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, watch, formState: { isSubmitting } } = useForm();
     const navigate = useNavigate();
 
+    const watchedDocumento = watch('documento');
+    const selectedFile = watchedDocumento && watchedDocumento[0];
+
     const { data, isLoading } = useLicenciaExistente(userId, citacionId);
-    const licenciaYaExiste = data?.length > 0;
+    const licenciaYaExiste = data?.some(licencia => licencia.estado !== 'rechazada');
 
     const {
         data: citacion,
@@ -42,13 +45,23 @@ const RegistrarLicencia = () => {
             return;
         }
         try {
+            const formDataPayload = new FormData();
+            formDataPayload.append('motivo', formData.motivo);
+            formDataPayload.append('autor', userId);
+            formDataPayload.append('citacion', citacionId);
+
+            if (formData.documento && formData.documento[0]) {
+                const file = formData.documento[0];
+                if (file.size > 500 * 1024) {
+                    toast.error('El documento no debe superar los 500 KB.');
+                    return;
+                }
+                formDataPayload.append('documento', file);
+            }
+
             await fetchWithToken('/licencias/', {
                 method: 'POST',
-                body: JSON.stringify({
-                    motivo: formData.motivo,
-                    autor: userId,
-                    citacion: citacionId,
-                }),
+                body: formDataPayload,
             });
             toast.success('Licencia registrada');
             navigate('/dashboard');
@@ -110,19 +123,77 @@ const RegistrarLicencia = () => {
                                 </label>
                                 <textarea
                                     {...register('motivo')}
-                                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 outline-none resize-none"
+                                    disabled={isSubmitting}
+                                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 outline-none resize-none disabled:opacity-50"
                                     rows={5}
                                     placeholder="Explica brevemente por qué no puedes asistir..."
                                     required
                                 />
                             </div>
 
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 ml-1">
+                                    Documento adjunto (Opcional, máx 500kb)
+                                </label>
+                                <div className={`relative border-2 border-dashed rounded-2xl p-6 transition-all duration-200 text-center cursor-pointer group ${
+                                    selectedFile 
+                                    ? 'border-green-500 bg-green-50/10 dark:border-green-700 dark:!bg-green-950/10' 
+                                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:!bg-slate-900/50 hover:bg-slate-100 dark:hover:!bg-slate-900/80'
+                                }`}>
+                                    <input
+                                        type="file"
+                                        {...register('documento')}
+                                        disabled={isSubmitting}
+                                        id="documento-file"
+                                        className="hidden"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    />
+                                    <label htmlFor="documento-file" className="cursor-pointer block">
+                                        {selectedFile ? (
+                                            <>
+                                                <div className="w-12 h-12 bg-green-100 dark:bg-green-950/30 rounded-xl flex items-center justify-center text-green-600 dark:text-green-400 mx-auto mb-3">
+                                                    <FileText size={24} />
+                                                </div>
+                                                <p className="text-sm font-bold text-slate-800 dark:text-white truncate max-w-xs mx-auto">
+                                                    {selectedFile.name}
+                                                </p>
+                                                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                                                    {(selectedFile.size / 1024).toFixed(1)} KB — Listo para enviar
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="w-12 h-12 bg-red-50 dark:bg-red-950/20 rounded-xl flex items-center justify-center text-red-600 dark:text-red-400 mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                                    <FileText size={24} />
+                                                </div>
+                                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                                    Seleccionar archivo
+                                                </p>
+                                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                                                    PDF, Word o Imagen (Máx. 500 KB)
+                                                </p>
+                                            </>
+                                        )}
+                                    </label>
+                                </div>
+                            </div>
+
                             <button
                                 type="submit"
-                                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-red-600/20 transition-all duration-200 flex items-center justify-center gap-2 group"
+                                disabled={isSubmitting}
+                                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-red-600/20 transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                Enviar licencia
+                                {isSubmitting ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                                        <span>Enviando...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                        <span>Enviar licencia</span>
+                                    </>
+                                )}
                             </button>
                         </form>
                     )}
