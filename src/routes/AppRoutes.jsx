@@ -62,6 +62,15 @@ import ResponderEncuesta from '../pages/Encuestas/ResponderEncuesta';
 import VerResultados from '../pages/Encuestas/VerResultados';
 import MisEncuestas from '../pages/Encuestas/MisEncuestas';
 
+// Salud y Accidentes
+import EncargadoSaludRoute from '../auth/EncargadoSaludRoute';
+import ExpedienteList from '../pages/Salud/ExpedienteList';
+import ExpedienteDetalle from '../pages/Salud/ExpedienteDetalle';
+import AccidentesList from '../pages/Salud/AccidentesList';
+import AccidenteCrear from '../pages/Salud/AccidenteCrear';
+import AccidenteDetalle from '../pages/Salud/AccidenteDetalle';
+
+
 const AppRoutes = () => {
 
     const { user } = useAuthStore();
@@ -343,6 +352,44 @@ const AppRoutes = () => {
                     <MisEncuestas />
                 </PrivateRoute>
             } />
+
+            {/* Salud y Accidentes */}
+            <Route path="/salud/expedientes" element={
+                <PrivateRoute>
+                    <EncargadoSaludRoute>
+                        <ExpedienteList />
+                    </EncargadoSaludRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/salud/expedientes/:bomberoId" element={
+                <PrivateRoute>
+                    <EncargadoSaludRoute>
+                        <ExpedienteDetalle />
+                    </EncargadoSaludRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/salud/accidentes" element={
+                <PrivateRoute>
+                    <EncargadoSaludRoute>
+                        <AccidentesList />
+                    </EncargadoSaludRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/salud/accidentes/crear" element={
+                <PrivateRoute>
+                    <EncargadoSaludRoute>
+                        <AccidenteCrear />
+                    </EncargadoSaludRoute>
+                </PrivateRoute>
+            } />
+            <Route path="/salud/accidentes/:id" element={
+                <PrivateRoute>
+                    <EncargadoSaludRoute>
+                        <AccidenteDetalle />
+                    </EncargadoSaludRoute>
+                </PrivateRoute>
+            } />
+
 
         </Routes>
     );

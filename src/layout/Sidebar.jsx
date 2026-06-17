@@ -17,8 +17,10 @@ import {
     Menu,
     LayoutDashboard,
     Calendar,
-    ClipboardList
+    ClipboardList,
+    HeartPulse
 } from 'lucide-react';
+
 
 const Sidebar = () => {
     const [openKeys, setOpenKeys] = useState([]);
@@ -29,6 +31,8 @@ const Sidebar = () => {
     const userPuedeCrearCitacion = isAyudanteOrSecretario(user);
     const userEsOficial = isOficial(user);
     const modulosActivos = user?.tenant?.modulos_activos || [];
+
+
 
     const menuItems = [
         { key: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
@@ -123,7 +127,15 @@ const Sidebar = () => {
                 { key: 'mis-encuestas', label: 'Mis Encuestas', path: '/encuestas/mis-encuestas' },
             ].filter(Boolean),
         },
-    ];
+        {
+            key: 'salud', label: 'Salud y Accidentes', icon: <HeartPulse size={20} />,
+            children: [
+                { key: 'expedientes', label: 'Expedientes Médicos', path: '/salud/expedientes' },
+                { key: 'accidentes', label: 'Historial Accidentes', path: '/salud/accidentes' },
+            ],
+        },
+    ].filter(Boolean);
+
 
     const toggleOpen = (key) => {
         setOpenKeys((prev) =>

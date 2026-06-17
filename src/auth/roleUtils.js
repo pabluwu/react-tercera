@@ -82,3 +82,18 @@ export const canSeeLicencias = (user) => {
   ]
   return oficiales.some((name) => groupNames.includes(name));
 }
+
+export const isEncargadoSalud = (user) => {
+  if (!user) return false;
+  const groupNames = getUserGroupNames(user).map((g) => g.toLowerCase());
+  const cargo = typeof user.perfil?.cargo === 'string' ? user.perfil.cargo.toLowerCase() : '';
+  
+  return (
+    groupNames.includes("encargado de salud") ||
+    groupNames.includes("encargado_salud") ||
+    cargo.includes("salud") ||
+    cargo.includes("encargado de salud") ||
+    user.is_superuser
+  );
+};
+
