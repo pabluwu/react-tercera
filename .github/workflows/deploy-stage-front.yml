@@ -54,6 +54,6 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         # Nota: Si tu proyecto usa Vite, la carpeta suele ser "dist/". 
         # Si usa Create React App, cámbialo a "build/" como lo tenías antes.
-        source: "dist/" 
+        source: "build/" 
         target: ${{ steps.set-env.outputs.TARGET_DIR }}
         strip_components: 1
