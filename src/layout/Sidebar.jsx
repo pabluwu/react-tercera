@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 import useAuthStore from '../store/useAuthStore';
-import { isTesorero, isAyudanteOrSecretario, isOficial, canSeeLicencias } from '../auth/roleUtils';
+import { isTesorero, isAyudanteOrSecretario, isOficial, canSeeLicencias, isEncargadoSalud } from '../auth/roleUtils';
 import { 
     Home, 
     User, 
@@ -31,6 +31,7 @@ const Sidebar = () => {
     const userPuedeCrearCitacion = isAyudanteOrSecretario(user);
     const userEsOficial = isOficial(user);
     const userPuedeGestionarLicencias = canSeeLicencias(user);
+    const userEsEncargadoSalud = isEncargadoSalud(user);
     const modulosActivos = user?.tenant?.modulos_activos || [];
 
 
@@ -128,7 +129,7 @@ const Sidebar = () => {
                 { key: 'mis-encuestas', label: 'Mis Encuestas', path: '/encuestas/mis-encuestas' },
             ].filter(Boolean),
         },
-        {
+        userEsEncargadoSalud && {
             key: 'salud', label: 'Salud y Accidentes', icon: <HeartPulse size={20} />,
             children: [
                 { key: 'expedientes', label: 'Expedientes Médicos', path: '/salud/expedientes' },
